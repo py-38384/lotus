@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@100&family=Outfit:wght@350&family=Poppins:wght@800&display=swap');
+:root{
+    --line-color:rgb(139, 139, 139);
+    --primary: #FC96DA;
+    --primary-active: #B976E1;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+    text-decoration: none;
+}
+a{
+    color: var(--primary-active);
+}
+a:hover{
+    color: black;
+}
+body{
+    background-color: #e4e4e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.main-container{
+    background-color: #ffffff;
+    padding: 30px;
+    margin-top: 29px;
+    margin-bottom: 29px;
+}
+.main-container div,
+.main-container form{
+    margin-bottom: 2rem;
+}
+.left-line,
+.right-line{
+    display: inline-block;
+    height: 1px;
+    width: 166px;
+    background-color: var(--line-color);
+}
+.logo-container{
+    text-align: center;
+}
+.logo-container-a
+{
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-family: "Roboto", sans-serif;
+}
+.logo-1{
+    color: var(--primary);
+    background-color: #3D464D;
+}
+.logo-2{
+    color: #3D464D;
+    background-color: var(--primary);
+    transform: translateX(-42px);
+}
+.logo-class{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+.login{
+    font-size: 22px;
+}
+.login,
+.google,
+.facebook{
+    text-align: center;
+}
+.google,
+.facebook{
+    padding: 10px;
+    border: 1px solid var(--line-color);
+    border-radius: 25px;
+    font-size: 15px;
+}
+.google img,
+.facebook img{
+    width:30px;
+}
+.google button,
+.facebook button{
+    color: #292929;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: none;
+    border: none;
+    width: 100%;
+    font-size: 18px;
+}
+.option-div{
+    color: rgb(99, 99, 99);
+}
+form input{
+    width:100%;
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    padding: 0 10px;
+    font-size: 18px;
+
+}
+form input:focus{
+    background-color: #ffffff;
+    outline:2px solid rgb(126, 197, 255);
+}
+form .signup{
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    border-radius: 20px;
+    border: none;
+    background-color: var(--main-color);
+    cursor: pointer;
+}
+form button:hover{
+    color: gray;
+}
+.about-us{
+    text-align: center;
+}
+hr{
+    background-color: var(--line-color);
+}
+.condition{
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+.errorlist{
+    color: red;
+    margin-left: 20px;
+}
+.google:hover,
+.facebook:hover{
+    background-color: black;
+}
+.google:hover button,
+.facebook:hover button{
+    color: var(--main-color);
+}
+@media screen and (max-width:470px) {
+    body{
+        font-size: 14px;
+    }
+    .left-line,
+    .right-line{
+        width: 100px;
+    }
+    .main-container div,
+    .main-container form{
+        margin-bottom: 1.7rem;
+    }
+    .google,
+    .facebook{
+        padding: 7px;
+    }
+    form input{
+        height: 35px;
+        border-radius: 5px;
+    }
+    .google img,
+    .facebook img{
+        width:20px;
+    }
+    form button{
+        height: 40px;
+    }
+    .logo-container-a
+    {
+        font-size: 2rem;
+    }
+    .login{
+        font-size: 17px;
+    }
+}
+@media screen and (max-width:370px) {
+    .left-line,
+    .right-line{
+        width: 90px;
+    }
+}
+@media screen and (max-width:290px) {
+    .left-line,
+    .right-line{
+        width: 55px;
+    }
+}

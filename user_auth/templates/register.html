@@ -1,0 +1,56 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register to Lotus</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}" />
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="logo-container">
+        <a href="/" class="logo-container-a">
+          <span class="logo-1 logo-class">Lo</span
+          ><span class="logo-2 logo-class">Tus</span>
+        </a>
+      </div>
+      <div class="login">Welcome!</div>
+      <form action="{% provider_login_url 'google' %}" method="post" class="google"> {% csrf_token %} <button type="submit"><img src="{% static 'img/google.png'%}" alt="google_logo">Log in with Google</button></form>
+      <form class="facebook"><button type="submit"><img src="{% static 'img/facebook.png'%}" alt="facebook_logo">Log in with Facebook</button></form>
+      <div class="option-div">
+        <span class="left-line"></span>
+        <span class="option">or register by email</span>
+        <span class="right-line"></span>
+      </div>
+      <form action="" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="password-field">
+          {{field.errors}}
+          <label for="password-input">{{field.label}}:</label><br>
+          {{field}}
+        </div>
+        {% endfor %}
+
+        <div class="condition-div"><input type="checkbox" onclick="togglepass(this)" name="" id="terms-and-condition" class="condition" > Show password</a></div>
+        {% if messages %}
+          {% for message in messages %}
+          <ul class="errorlist">
+            <li>
+              {{message|safe}}
+            </li>
+          </ul>
+          {% endfor %}
+        {% endif %}
+        <div class="condition-div"><input type="checkbox" onclick="activeSubmitBtn(this)" name="agree" class="condition"> I agree to the <a href="">Terms of Service</a> and <a href="">Privary Policy</a></div>
+        <button style="pointer-events: none;background:gray;" class="signup" type="submit">Register</button>
+      </form>
+      <hr />
+      <div>Already have an account? <a href="{% url 'login' %}">Log in</a></div>
+      <!-- <div class="about-us"><a href="#">About us</a></div> -->
+    </div>
+  </body>
+  <script src="{% static 'js/register.js' %}" type="text/javascript" ></script>
+</html>

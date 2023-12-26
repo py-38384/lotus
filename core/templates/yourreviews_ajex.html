@@ -1,0 +1,65 @@
+{% load static %} {% for review_obj in review_arr %}
+<h5 class="mb-4 review_header">
+  Your review for "{{review_obj.product_name}}"
+</h5>
+{% for review in review_obj.list %}
+<div class="media mb-4 review_div_{{review.id}}">
+  <a href="">
+    <img
+      {% if review.user.display_picture %}
+      src="/{{review.user.display_picture}}/"
+      {% else %}
+      src="{% static 'img/review_default_user_dp.png' %}/"
+      {% endif %}
+      alt="Image"
+      class="img-fluid mr-3 mt-1"
+      style="width: 45px"
+    />
+  </a>
+  <div class="media-body">
+    <h6>
+      <a href="">{{review.user.name}}</a
+      ><small> - <i class="review_time">{{review.timesince}}</i></small>
+    </h6>
+    <div class="text-primary mb-2">
+      {% if review.review_star == 5 %}
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      {% elif review.review_star == 4 %}
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="far fa-star"></i>
+      {% elif review.review_star == 3 %}
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="far fa-star"></i>
+      <i class="far fa-star"></i>
+      {% elif review.review_star == 2 %}
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="far fa-star"></i>
+      <i class="far fa-star"></i>
+      <i class="far fa-star"></i>
+      {% elif review.review_star == 1 %}
+      <i class="fas fa-star"></i>
+      <i class="far fa-star"></i>
+      <i class="far fa-star"></i>
+      <i class="far fa-star"></i>
+      <i class="far fa-star"></i>
+      {% endif %}
+    </div>
+    <p>{{review.comment}}</p>
+    <div class="review-action-button-div">
+      <span class="review-action-button-edit review-action-button" onclick="edit_review_for_manage_account(this,event,{{review.id}})" data-bs-toggle="modal" data-bs-target="#account-review-edit-form">Edit</span>
+      
+      <span class="review-action-button-delete review-action-button" onclick="delete_review_confirm_for_manage_account_activate(this,event,{{review.id}})" >Delete</span>
+    </div>
+  </div>
+</div>
+{% endfor %} {% endfor %}

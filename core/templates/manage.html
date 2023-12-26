@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="manage-container">
+  <div><h3 class="manage-account-header container-fluid">Manage account</h3></div>
+  <div class="account-manage-div">
+    <a href="{% url 'your_order' %}" class="your-order account-manage-option">
+      <div class="logo-div">
+        <img src="{% static '/img/your order.png/' %}" alt="action-logo" />
+      </div>
+      <div class="title-desc-div">
+        <strong>Your order</strong>
+        <p>Track, return, cancel an order</p>
+      </div>
+    </a>
+    <a href="{% url 'customize_profile' %}" class="your-profile account-manage-option">
+      <div class="logo-div">
+        <img src="{% static '/img/your profile.png/' %}" alt="action-logo" />
+      </div>
+      <div class="title-desc-div">
+        <strong>Your profile</strong>
+        <p>Customize your profile, change profile picture or name</p>
+      </div>
+    </a>
+    <a href="{% url 'login_security' %}" class="login-security account-manage-option">
+      <div class="logo-div">
+        <img src="{% static '/img/login security.png/' %}" alt="action-logo" />
+      </div>
+      <div class="title-desc-div">
+        <strong>Login security</strong>
+        <p>Change password, add or change mobile number</p>
+      </div>
+    </a>
+    <a href="{% url 'your_reviews' %}" class="your-reviews account-manage-option">
+      <div class="logo-div">
+        <img src="{% static '/img/review.png/' %}" alt="action-logo" />
+      </div>
+      <div class="title-desc-div">
+        <strong>Your reviews</strong>
+        <p>Edit, delete or reply to your review</p>
+      </div>
+    </a>
+  </div>
+</div>
+{% endblock %}

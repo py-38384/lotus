@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row px-xl-3">
+    <div class="col-12">
+      <nav class="breadcrumb bg-light mb-30">
+        <a class="breadcrumb-item text-dark" href="{% url 'home' %}">Home</a>
+        <a class="breadcrumb-item text-dark" href="{% url 'manage_account' %}">Manage account</a>
+        <a class="breadcrumb-item text-dark" href="{% url 'login_security' %}">Login and security</a>
+        <span class="breadcrumb-item active">Change_email</span>
+      </nav>
+    </div>
+  </div>
+</div>
+<h3 class="header">Change Email</h3>
+{% if messages %}
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{message|safe}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{message|safe}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+<div class="change-email">
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="email" name="new_email" value={{email}}>
+        <button style="border-radius:0;">Submit</button>
+    </form>
+</div>
+{% endblock %}

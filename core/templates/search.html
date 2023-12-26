@@ -1,0 +1,88 @@
+{% extends 'base.html' %} {% load static %}
+{% block content %}
+    <div class="ml-2"><h2>Search result for "<span class="search-quarry">{{q}}</span>"</h2></div>
+    <div class="ml-2"><p>Showing result {{total_inpage_product}} of {{total_product}}</p></div>
+
+    <!-- Shop Start -->
+    <div class="container-fluid">
+        <div class="row px-5">
+
+
+            <!-- Shop Product Start -->
+            <div class="col-lg-12">
+                <div class="container-fluid">
+                    {% if products %}
+                    {% for product in products %}
+                    <div class="row my-3 p-4" style="border:1px solid rgb(209, 209, 209)">
+                        <div class="ml-2 mr-5">
+                            {% if product.image %}
+                            <img class="img-fluid w-10" style="width:200px" src="/{{product.image}}/" alt="image">
+                            {% else %}
+                            <img class="img-fluid w-10" style="width:200px" src="{% static 'img/placeholder.jpg' %}" alt="image">
+                            {% endif %}
+                        </div>
+                        <div class=" py-4">
+                            <a class="h6 text-decoration-none text-truncate" href="{% url 'detail' product.id %}">{{product.title}}</a>
+                            <span class="">
+                              {% if product.discount %}
+                              <h5>${{product.price}}</h5><h6 class="text-muted ml-2"><del>${{product.original_price}}</del></h6>
+                              {% else %}
+                              <h5>${{product.price}}</h5><h6 class="text-muted ml-2"><del></del></h6>
+                              {% endif %}
+                            </span>
+                            <span class="">
+                                <small class="fa fa-star text-primary mr-1"></small>
+                                <small class="fa fa-star text-primary mr-1"></small>
+                                <small class="fa fa-star text-primary mr-1"></small>
+                                <small class="far fa-star text-primary mr-1"></small>
+                                <small class="far fa-star text-primary mr-1"></small>
+                                <small>(99)</small>
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="row my-3 p-4" style="border:1px solid rgb(209, 209, 209)">
+                      NO RESULT FOUND
+                    </div>
+                    {% endif %}
+                    <div class="col-12">
+                        <nav>
+                            <ul class="pagination justify-content-center">
+                
+                              {% if pagenator_object.has_previous %}
+                              <li class="page-item">
+                                <a class="page-link" href="?page=1&q={{q}}">&larr; First</a>
+                              </li>
+                              <li class="page-item">
+                                <a class="page-link" href="?page={{pagenator_object.previous_page_number}}&q={{q}}">Previous</a>
+                              </li>
+                              {% endif %}
+                
+                              {% for i in page_list %}
+                              {% if i == current_page %}
+                              <li class="page-item active">
+                                <a class="page-link" href="?page={{i}}&q={{q}}">{{i}}</a>
+                              </li>
+                              {% else %}
+                              <li class="page-item">
+                                <a class="page-link" href="?page={{i}}&q={{q}}">{{i}}</a>
+                              </li>
+                              {% endif %}
+                              {% endfor %}
+                              {% if pagenator_object.has_next %}
+                              <li class="page-item"><a class="page-link" href="?page={{pagenator_object.next_page_number}}&q={{q}}">Next</a></li>
+                              <li class="page-item"><a class="page-link" href="?page={{last_page}}&q={{q}}">Last &rarr;</a></li>
+                              {% endif %}
+                
+                            </ul>
+                          </nav>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Shop Product End -->
+        </div>
+    </div>
+    <!-- Shop End -->
+{% endblock %}

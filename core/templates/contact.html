@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nav %}
+    <a href="{% url 'home' %}" class="nav-item nav-link">Home</a>
+    <a href="{% url 'deals' %}" class="nav-item nav-link">Today's Deals</a>
+    <a href="{% url 'shop' %}" class="nav-item nav-link">Shop</a>
+    <a href="{% url 'contact' %}" class="nav-item nav-link active">Contact</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Contact Start -->
+    <div class="container-fluid">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Contact Us</span></h2>
+        <div class="row px-xl-5">
+            <div class="col-lg-7 mb-5">
+                <div class="contact-form bg-light p-30">
+                    <div id="success">
+                        {% if messages %}
+                            {%for message in messages%}
+                            <p style="color:green">
+                                {{message|safe}}
+                            </p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <label for="password-input">{{form.name.label}}:</label><br>
+                            {{form.name}}
+                            {{form.name.errors}}
+                        </div>
+                        <div class="control-group">
+                            <label for="password-input">{{form.email.label}}:</label><br>
+                            {{form.email}}
+                            {{form.email.errors}}
+                        </div>
+                        <div class="control-group">
+                            <label for="password-input">{{form.subject.label}}:</label><br>
+                            {{form.subject}}
+                            {{form.subject.errors}}
+                        </div>
+                        <div class="control-group">
+                            <label for="password-input">{{form.message.label}}:</label><br>
+                            {{form.message}}
+                            {{form.message.errors}}
+                        </div>
+                        <div>
+                            <button class="btn btn-primary my-3 py-2 px-4" type="submit" id="sendMessageButton">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5 mb-5">
+                <div class="bg-light p-30 mb-3">
+                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
+                    <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+
+
+    {% endblock %}

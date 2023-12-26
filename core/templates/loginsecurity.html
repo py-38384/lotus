@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load socialaccount %}
+{% get_social_accounts user as accounts %}
+<div class="container-fluid">
+  <div class="row px-xl-3">
+    <div class="col-12">
+      <nav class="breadcrumb bg-light mb-30">
+        <a class="breadcrumb-item text-dark" href="{% url 'home' %}">Home</a>
+        <a class="breadcrumb-item text-dark" href="{% url 'manage_account' %}">Manage account</a>
+        <span class="breadcrumb-item active">Login and security</span>
+      </nav>
+    </div>
+  </div>
+</div>
+<h3 class="manage-account-header container-fluid">Password and email</h3>
+<div class="account-manage-div">
+  {% if accounts %}
+  <a href="{% url 'change_password' %}" class="your-profile account-manage-option">
+    <div class="logo-div">
+      <img src="{% static '/img/reset_password.png/' %}" alt="action-logo" />
+    </div>
+    <div class="title-desc-div">
+      <strong>Change password</strong>
+      <p>Change your password to a new one your profile</p>
+    </div>
+  </a>
+  {% else %}
+  <a href="{% url 'change_eamil' %}" class="your-order account-manage-option">
+      <div class="logo-div">
+      <img src="{% static '/img/change_mail.png/' %}" alt="action-logo" />
+      </div>
+      <div class="title-desc-div">
+      <strong>Change email</strong>
+      <p>Change your base email to a new one.</p>
+      </div>
+  </a>
+  <a href="{% url 'change_password' %}" class="your-profile account-manage-option">
+    <div class="logo-div">
+      <img src="{% static '/img/reset_password.png/' %}" alt="action-logo" />
+    </div>
+    <div class="title-desc-div">
+      <strong>Change password</strong>
+      <p>Change your password to a new one your profile</p>
+    </div>
+  </a>
+  {% endif %}
+</div>
+{% endblock %}
