@@ -143,7 +143,7 @@ class ShippingAddress(models.Model):
 
 class ContactUs(models.Model):
     name = models.CharField(max_length=50)
-    email = models.CharField()
+    email = models.CharField(max_length=50)
     subject = models.CharField(max_length=250)
     message = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True)
