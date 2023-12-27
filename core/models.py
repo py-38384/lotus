@@ -18,7 +18,7 @@ class Customer(models.Model):
     email = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return self.user.userneme
+        return self.id
 
 
 class Category(models.Model):
