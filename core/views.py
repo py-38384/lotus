@@ -290,7 +290,7 @@ class Cart(View):
         items = []
         subtotal = 0
         if request.user.is_authenticated:
-            customer = Customer.objects.get(user=request.user)
+            customer = Customer.objects.get_or_create(user=request.user)
             order, created = Order.objects.get_or_create(customer=customer, complete=False,)
             items = list(OrderItem.objects.filter(order=order.id))
         else:
