@@ -127,4 +127,3 @@ for (let i = 0; i < price_checkbox.length; i++) {
   });
 }
 
-
