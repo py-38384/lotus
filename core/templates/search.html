@@ -16,7 +16,7 @@
                     <div class="row my-3 p-4" style="border:1px solid rgb(209, 209, 209)">
                         <div class="ml-2 mr-5">
                             {% if product.image %}
-                            <img class="img-fluid w-10" style="width:200px" src="/{{product.image.url}}/" alt="image">
+                            <img class="img-fluid w-10" style="width:200px" src="{{product.image.url}}" alt="image">
                             {% else %}
                             <img class="img-fluid w-10" style="width:200px" src="{% static 'img/placeholder.jpg' %}" alt="image">
                             {% endif %}
