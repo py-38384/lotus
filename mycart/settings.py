@@ -190,3 +190,13 @@ ACCOUNT_EMAIL_REQUIRED=True
 ACCOUNT_CHANGE_EMAIL=True
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 LOGIN_REDIRECT_URL = "home"
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config( 
+  cloud_name = "do2afaasp", 
+  api_key = "723866855757829", 
+  api_secret = "KvF-BG5fagy-fHln_h81liY9Q-0"
+)
