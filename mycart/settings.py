@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 cloudinary.config( 
   cloud_name = "do2afaasp", 
