@@ -3,6 +3,16 @@ from core.forms import *
 from user_auth.models import User
 from django.conf import settings
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config( 
+  cloud_name = "do2afaasp", 
+  api_key = "723866855757829", 
+  api_secret = "KvF-BG5fagy-fHln_h81liY9Q-0"
+)
+
 def total_cart_items(request):
     total_items = 0
     items = []
