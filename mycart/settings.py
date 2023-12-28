@@ -12,13 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import cloudinary
-
-cloudinary.config( 
-  cloud_name = "do2afaasp", 
-  api_key = "723866855757829", 
-  api_secret = "KvF-BG5fagy-fHln_h81liY9Q-0"
-)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
