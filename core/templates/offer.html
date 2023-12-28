@@ -19,7 +19,7 @@
                         <div class="product-item bg-light mb-4">
                             <div class="product-img position-relative overflow-hidden">
                                 {% if product.image %}
-                                <img class="img-fluid w-100" src="/{{product.image}}/" alt="image" />
+                                <img class="img-fluid w-100" src="{{product.image.url}}" alt="image" />
                                 {% else %}
                                 <img class="img-fluid w-100" src="{% static 'img/placeholder.jpg' %}" alt="image" />
                                 {% endif %}

@@ -15,6 +15,6 @@ from whitenoise import WhiteNoise
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mycart.settings')
 
 application = get_wsgi_application()
-application = WhiteNoise(application, root="/path/to/static/files")
+application = WhiteNoise(application, root="static")
 
 app = application
