@@ -30,7 +30,7 @@
 
                         {% for item in product_obj %}
                         <tr id="product_row_number_{{item.id}}">
-                            <td class="align-middle"><img src="/{{item.image}}" alt="" style="width: 50px;">{{item.title}}</td>
+                            <td class="align-middle"><img src="{{item.image}}" alt="" style="width: 50px;">{{item.title}}</td>
                             {% if item.discount %}
                             <td class="align-middle">${{item.price}} / <del>{{item.original_price}}</del></td>
                             {% else %}
