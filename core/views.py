@@ -41,7 +41,6 @@ def get_product_array(products):
                 if product.discount>0:
                     product_obj['discount'] = product.discount
                     discount_price_cut = product.price*(Decimal(product.discount)/Decimal(100))
-                    print('Discounted price-> ',discount_price_cut)
                     discount_price = product.price-discount_price_cut
                     product_obj['price'] = discount_price.normalize()
 
