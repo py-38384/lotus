@@ -36,7 +36,7 @@ SECRET_KEY = 'django-insecure-hdoyt4cmxtcx)vz60ua%)+m)+$h0=zs9u1w+mh07w*!%h@6po@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '127.0.0.1', 'localhost', 'lotus-7pwc.onrender.com']
+ALLOWED_HOSTS = ['lotus-7pwc.onrender.com']
 
 SITE_ID = 1
 
@@ -71,7 +71,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'mycart.urls'
 
