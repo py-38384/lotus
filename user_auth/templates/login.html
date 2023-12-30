@@ -1,5 +1,6 @@
 {% load static %}
 {% load socialaccount %}
+{% providers_media_js %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,13 +13,14 @@
     <div class="main-container">
       <div class="logo-container">
         <a href="/" class="logo-container-a">
-          <span class="logo-1 logo-class">Lo</span
-          ><span class="logo-2 logo-class">Tus</span>
+          <!-- <span class="logo-1 logo-class">Lo</span
+          ><span class="logo-2 logo-class">Tus</span> -->
+          <img src='{% static 'img/logo.png' %}' class='logo-image' alt='logo'>
         </a>
       </div>
       <div class="login">Welcome back!</div>
       <form action="{% provider_login_url 'google' %}" method="post" class="google"> {% csrf_token %} <button type="submit"><img src="{% static 'img/google.png'%}" alt="google_logo">Log in with Google</button></form>
-      <form class="facebook"><button type="submit"><img src="{% static 'img/facebook.png'%}" alt="facebook_logo">Log in with Facebook</button></form>
+      <form action="{% provider_login_url 'facebook' %}" method="post" class="facebook"> {% csrf_token %} <button type="submit"><img src="{% static 'img/facebook.png'%}" alt="facebook_logo">Log in with Facebook</button></form>
       <div class="option-div">
         <span class="left-line"></span>
         <span class="option">or login by email</span>

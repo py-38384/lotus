@@ -9990,8 +9990,18 @@ a.text-dark:hover, a.text-dark:focus {
 .confirm-footer .confirm-buttons button:hover{
   background-color: #4d5861;
 }
-
-
+.logo-image{
+  width: 60px;
+  pointer-events: none;
+}
+.mobile-logo-image{
+  pointer-events: none;
+  width: 40px;
+}
+.mobile-logo-image-wrapper{
+  padding: 5px;
+  background-color: #c4c4c4;
+}
 
 @media only screen and (max-width: 1500px){
   .customize-input-div form,
@@ -10046,8 +10056,5 @@ a.text-dark:hover, a.text-dark:focus {
   }
   .header{
       margin-left: 10px;
-  }
-  .carousel-image{
-      height: 500px;
   }
 }

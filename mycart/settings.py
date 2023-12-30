@@ -188,15 +188,19 @@ AUTHENTICATION_BACKENDS = [
 ]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
         'EMAIL_AUTHENTICATION': True,
         'APP': {
             'client_id': '383616365376-177in9c4m8hkjm8he9aup6ff6fllq6l3.apps.googleusercontent.com',
             'secret': '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',
             'key': ''
         }
+    },
+    'facebook' : {
+        'APP': {
+            'client_id': '1420119178859758',
+            'secret': '33ed5c22ac82cd55a93a5d30288c4142',
+            'key': ''
+        },
     }
 }
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT=True

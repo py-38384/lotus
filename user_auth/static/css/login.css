@@ -147,6 +147,10 @@ hr{
 .facebook:hover button{
     color: var(--primary-active);
 }
+.logo-image{
+    width: 90px;
+    pointer-events: none;
+}
 @media screen and (max-width:470px) {
     body{
         font-size: 14px;
@@ -180,5 +184,8 @@ hr{
     }
     .login{
         font-size: 17px;
+    }
+    .logo-image{
+        width: 70px;
     }
 }
