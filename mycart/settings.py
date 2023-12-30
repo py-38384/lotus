@@ -197,8 +197,8 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'facebook' : {
         'APP': {
-            'client_id': '1420119178859758',
-            'secret': '33ed5c22ac82cd55a93a5d30288c4142',
+            'client_id': '1015834582843680',
+            'secret': '9ffc1da3c4c224b0f1fa18dcf7484b45',
             'key': ''
         },
     }
