@@ -170,7 +170,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+EMAIL_FILE_PATH = BASE_DIR / "email_sent_box"
 
 # user define grobal variable
 PRODUCT_NAME_LIMIT = 15
