@@ -741,7 +741,7 @@ class ChangePassword(View):
 
 class ChangeEmail(View):
     def get(self,request):
-        if user.socialaccount_set.exists():
+        if request.user.socialaccount_set.exists():
             return redirect('login_security')
         else:   
             user = User.objects.get(id=request.user.id)

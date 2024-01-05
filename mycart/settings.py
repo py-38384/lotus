@@ -105,14 +105,25 @@ WSGI_APPLICATION = 'mycart.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'railway',
+#         'USER': 'postgres',
+#         'PASSWORD': 'g2e44DE1eb444a653ad2ED6cFbgdg*2f',
+#         'HOST': 'viaduct.proxy.rlwy.net',
+#         'PORT': '55426',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
+        'NAME': 'mycartdb',
         'USER': 'postgres',
-        'PASSWORD': 'g2e44DE1eb444a653ad2ED6cFbgdg*2f',
-        'HOST': 'viaduct.proxy.rlwy.net',
-        'PORT': '55426',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

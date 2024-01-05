@@ -1,6 +1,7 @@
 from core.models import *
 from core.forms import *
-from user_auth.models import User
+from user_auth.models import User,Email_Verified
+from django.shortcuts import render, redirect
 from django.conf import settings
 
 def total_cart_items(request):

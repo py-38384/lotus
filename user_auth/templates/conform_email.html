@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify your email - Lotus</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.jpg' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <a href="/" class="logo-container-a">
+              <img src='{% static 'img/logo.png' %}' class='logo-image' alt='logo'>
+            </a>
+        </div>
+        <h2>Verify you email</h2>
+        <div>{{message}}</div>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="otp-input-div">
+                <input 
+                id="otp-box" 
+                type="text" 
+                name="otp" 
+                placeholder="258726..."
+                {% if input_disable %}
+                disabled
+                {% endif %}
+                >
+                <label for="otp-box">Enter your otp here</label>
+            </div>
+            <div class="otp-submit-div">
+                <input type="submit" value="verify">
+            </div>
+        </form>
+        {% if email_resend_available %}
+        <a href={% url 'email_resend' %}>Resend the email</a>
+        <script>
+            const email_resend_unavailable = false
+        </script>
+        {% else %}
+        <div class='resend-unavailable'></div>
+        <script>
+            const email_resend_unavailable = true
+            let email_resend_time_left_sec = {{time_wait_need}}
+        </script>
+        {% endif %}
+    </div>
+    {% if input_disable %}
+    <script>
+        const input_disable = true
+        let input_active_time_left_sec = {{wait_time_need}}
+    </script>
+    {% endif %}
+</body>
+</html>

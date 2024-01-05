@@ -26,7 +26,7 @@ class Category(models.Model):
     name = models.CharField(max_length=200, null=True)
     small_desc = models.CharField(max_length=255, null=True, blank=True)
     image = models.ImageField(upload_to="category_image/",null=True,blank=True)
-    image = CloudinaryField('image')
+    # image = CloudinaryField('image')
 
     def __str__(self):
         return self.name
@@ -82,7 +82,8 @@ class Product(models.Model):
 
 class ProductImages(models.Model):
     product = models.ForeignKey(Product,blank=True,null=True,default=None,on_delete=models.CASCADE)
-    image = CloudinaryField('image')
+    image = models.ImageField(upload_to="product_images/",null=True,blank=True)
+    # image = CloudinaryField('image')
 
     def __str__(self):
         return self.product.name

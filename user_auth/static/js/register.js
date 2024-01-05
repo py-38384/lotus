@@ -1,5 +1,5 @@
 let password_fields = document.querySelectorAll('input[type=password]');
-let main_color = "#33ff70";
+let main_color = "#FC96DA";
 function togglepass(ele){
     if(ele.checked){
         for(let i = 0;i<password_fields.length;i++){
