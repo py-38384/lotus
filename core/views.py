@@ -6,11 +6,12 @@ from . import forms as core_forms
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+from validate_email import validate_email
 from django.db.models import Q
 from random import randint
 from .models import *
 from django.conf import settings
-from user_auth.models import User
+from user_auth.models import *
 from user_auth import forms
 from datetime import datetime
 from pathlib import Path
@@ -57,6 +58,7 @@ def get_product_array(products):
 
 class Index(View):
     def get(self, request):
+        print('In to the index view')
         recent_product = []
         categories_arr = [] 
         one_week = 60*60*24*7
@@ -750,25 +752,31 @@ class ChangeEmail(View):
             return render(request,"change_email.html",context)
         
     def post(self,request):
-        if user.socialaccount_set.exists():
+        if request.user.socialaccount_set.exists():
             return redirect('home')
-        else:
-            context = {}
-            try:
-                new_email = request.POST['new_email']
-                if User.objects.filter(email=new_email).exists():
-                    context = {'email':new_email}
-                    messages.error(request,'This email is already exist!!')
-                    return render(request,"change_email.html",context)
-                else:
-                    context = {'email':new_email}
-                    user = User.objects.get(id=request.user.id)
-                    user.email = new_email
-                    user.save()
-                    messages.success(request,'Email change successful...')
-                    return render(request,"change_email.html",context)
-            except:
-                pass
+        context = {}
+        new_email = request.POST['new_email']
+        if len(new_email) == 0:
+            context = {'email':new_email}
+            messages.error(request,'Enter a email')
+            return render(request,"change_email.html",context)
+        if User.objects.filter(email=new_email).exists():
+            context = {'email':new_email}
+            messages.error(request,'This email is already exist!!')
+            return render(request,"change_email.html",context)
+        context = {'email':new_email}
+        user = User.objects.get(id=request.user.id)
+        is_valid = validate_email(new_email)
+        if is_valid:
+            user.email = new_email
+            user.save()
+            otp_obj = Email_Verified.objects.get(user=request.user)
+            otp_obj.email_verified = False
+            otp_obj.direct_email_send = True
+            otp_obj.save()
+            return redirect('conform_email')
+        messages.error(request,'This email is not valid or not exist!!')
+        return render(request,"change_email.html",context)
 
 
 class YourReviews(View):

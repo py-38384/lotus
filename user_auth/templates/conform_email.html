@@ -7,6 +7,7 @@
     <title>Verify your email - Lotus</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.jpg' %}">
+    <link rel="stylesheet" href="{% static 'css/email.css' %}">
 </head>
 <body>
     <div class="container">
@@ -15,44 +16,53 @@
               <img src='{% static 'img/logo.png' %}' class='logo-image' alt='logo'>
             </a>
         </div>
-        <h2>Verify you email</h2>
-        <div>{{message}}</div>
+        <h2>Verify your email</h2>
+        <div>{{message|safe}}</div>
         <form action="" method="post">
             {% csrf_token %}
+            {% if input_disable %}
+                <div class='otp-label'>Input available in <span class='input-unavailable'></span></div>
+                <script>
+                    const input_disable = true
+                    let input_active_time_left_sec = {{wait_time_need}}
+                </script>
+            {% endif %}
             <div class="otp-input-div">
                 <input 
                 id="otp-box" 
                 type="text" 
                 name="otp" 
-                placeholder="258726..."
+                placeholder="OTP here..."
                 {% if input_disable %}
                 disabled
                 {% endif %}
                 >
-                <label for="otp-box">Enter your otp here</label>
+                
             </div>
             <div class="otp-submit-div">
-                <input type="submit" value="verify">
+                <input 
+                type="submit" 
+                value="VERIFY" 
+                {% if input_disable %}
+                disabled
+                {% endif %}
+                >
             </div>
         </form>
         {% if email_resend_available %}
-        <a href={% url 'email_resend' %}>Resend the email</a>
+        <div class='resend_email'><a href={% url 'email_resend' %}>Resend the email</a></div>
         <script>
             const email_resend_unavailable = false
         </script>
         {% else %}
-        <div class='resend-unavailable'></div>
+        <div>Email resend available in <span class='resend-unavailable'></span></div>
         <script>
             const email_resend_unavailable = true
-            let email_resend_time_left_sec = {{time_wait_need}}
+            let email_resend_time_left_sec = {{email_resend_time_wait_need}}
         </script>
         {% endif %}
+        <div class='change_email'><a href={% url 'change_email' %}>Change the email</a></div>
     </div>
-    {% if input_disable %}
-    <script>
-        const input_disable = true
-        let input_active_time_left_sec = {{wait_time_need}}
-    </script>
-    {% endif %}
 </body>
+<script src='{% static 'js/verify.js' %}'></script>
 </html>

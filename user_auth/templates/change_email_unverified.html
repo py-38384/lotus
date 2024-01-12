@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change your email - Lotus</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.jpg' %}">
+    <link rel="stylesheet" href="{% static 'css/email.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <a href="/" class="logo-container-a">
+              <img src='{% static 'img/logo.png' %}' class='logo-image' alt='logo'>
+            </a>
+        </div>
+        <h2>Change your email</h2>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-success">
+                    {{message|safe}}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                    {{message|safe}}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class='otp-label'>Enter Your new email</div>
+            <div class="otp-input-div">
+                <input 
+                id="otp-box" 
+                type="email" 
+                name="new_email"
+                placeholder="{{email}}"
+                >
+            </div>
+            <div class="otp-submit-div">
+                <input type="submit" value="SUBMIT">
+            </div>
+        </form>
+        <a href="{% url 'conform_email' %}">Verify current Email</a>
+    </div>
+</body>
+<script src='{% static 'js/verify.js' %}'></script>
+</html>

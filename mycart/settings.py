@@ -73,6 +73,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "user_auth.middleware.SimpleMiddleware"
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

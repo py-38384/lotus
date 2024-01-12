@@ -3,6 +3,7 @@ from django.http import Http404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from validate_email import validate_email
 from .forms import CreateUserForm
 from django.views import View
 from .models import *
@@ -11,39 +12,42 @@ from django.contrib.auth.decorators import login_required
 from time import time
 from .send_email import send_email
 from random import randint
+import random
+import string
 
 # {% provider_login_url 'google' %}
 
+ 
+def get_otp(size):
+    all_chars = string.ascii_letters + string.digits
+    otp = ""
+    for i in range(size):
+        otp += random.choice(all_chars)
+    return otp
+
 def send_otp(request):
-    otp = ''
-    iter = 6
-    while iter > 0:
-        otp += str(randint(0,9))
-        iter-=1
-    email_body = 'this is your OTP - {0}'.format(otp)
+    otp = get_otp(randint(10,25))
+    email_body = 'this is your OTP to verify your email -> <b>{0}</b><br> Lotus team'.format(otp)
     email_result = send_email(
         sender_email='workwithpiyal@gmail.com',
         receiver_email=request.user.email,
         sender_account_pass='wrgp kqoh cqtq hagv',
-        mail_subject='Conform your email.',
+        mail_subject='Verify your email.',
         email_body=email_body
         )
     if email_result:
-        try:
-            otp_obj = Email_Verified.objects.get(user=request.user)
-            otp_obj.last_otp = int(otp)
-            otp_obj.last_email_send = int(time())
-            otp_obj.save()
-            return {'otp':otp,'email_status':'Email successfully send','otp_obj':otp_obj}
-        except Exception as e:
-            return{'error','Invalid call'}
+        otp_obj = Email_Verified.objects.get(user=request.user)
+        otp_obj.last_otp = otp
+        otp_obj.last_email_send = int(time())
+        otp_obj.direct_email_send = False
+        otp_obj.save()
+        return {'otp':otp,'email_status':'Email successfully send','otp_obj':otp_obj}
     else:
-        return {'otp':otp,'email_status':email_result,'otp_obj':otp_obj}
+        return {'otp':otp,'email_status':email_result,'otp_obj':{}}
 
 def email_resend_justifications(request):
     otp_obj = Email_Verified.objects.get(user=request.user)
     time_waited = int(time())-int(otp_obj.last_email_send)
-    print(time_waited)
     if otp_obj.email_attempt_level == 1:
         time_wait_target = 60
         if time_waited > time_wait_target:
@@ -210,14 +214,18 @@ def registrationView(request):
             if form.is_valid():
                 form.save()
                 email = form.cleaned_data.get('email')
-                user = authenticate(request, email=email, password=password)
-                login(request,user)
-                return redirect('conform_email')
+                is_valid = validate_email(email)
+                if is_valid:
+                    user = authenticate(request, email=email, password=password)
+                    login(request,user)
+                    return redirect('conform_email')
+                messages.error(request,'Your email is not valid or does not Exist!')
+                return render(request,'register.html',context)
             else:
                 context['form'] = form
                 return render(request,'register.html',context)
         else:
-            messages.success(request,'You need to agree on our Terms of Service and Privary Policy.')
+            messages.error(request,'You need to agree on our Terms of Service and Privary Policy.')
             return render(request,'register.html',context)
 
     return render(request,'register.html',context)
@@ -228,24 +236,33 @@ class Conform_Email(View):
         email_verified_obj, email_verified_obj_created = Email_Verified.objects.get_or_create(user=request.user)
         if email_verified_obj.email_verified:
             raise Http404()
-        elif email_verified_obj_created:
+        if email_verified_obj_created or email_verified_obj.direct_email_send:
             otp_data_obj = send_otp(request)
             otp_data_obj['otp_obj'].attempt_remain = 5
-            otp_data_obj['otp_obj'].otp_attempt_level = 1
-            otp_data_obj['otp_obj'].email_attempt_level = 1
+            otp_data_obj['otp_obj'].otp_attempt_level = 0
+            if email_verified_obj_created:
+                otp_data_obj['otp_obj'].email_attempt_level = 1
+            if not email_verified_obj_created and not email_verified_obj.once_email_verified:
+                otp_data_obj['otp_obj'].email_attempt_level += 1
             otp_data_obj['otp_obj'].save()
-            print(otp_data_obj['email_status'])
-            context['message'] = 'We emailed a OTP to your email address. Enter the OTP to conform your email.'
-            context['email_resend_time_wait_need'] = 60
+            email_resend_justifications_obj = email_resend_justifications(request)
+            print('{0}, email sender address -> {1}'.format(otp_data_obj['email_status'],request.user.email))
+            context['message'] = 'We emailed a OTP to <span class="bold">{0}</span>. Enter the OTP to conform your email.'.format(request.user.email)
+            context['email_resend_time_wait_need'] = email_resend_justifications_obj['time_wait_need']
             return render(request, 'conform_email.html',context)
         if email_verified_obj.blocked:
                 return redirect('block')
+        email_resend_justifications_obj = email_resend_justifications(request)
         if email_verified_obj.otp_input_blocked:
             get_otp_input_wait_time_obj = get_otp_input_wait_time(request)
+            if email_resend_justifications_obj['email_resend_available']:
+                context['email_resend_available'] = True
+            else:
+                context['email_resend_time_wait_need'] = email_resend_justifications_obj['time_wait_need']
             if get_otp_input_wait_time_obj['waited_time'] > get_otp_input_wait_time_obj['wait_time_target']:
                 email_verified_obj.otp_input_blocked = False
                 email_verified_obj.save()
-                context['message'] = 'We emailed a OTP to your email address. Enter the OTP to conform your email.'
+                context['message'] = 'We emailed a OTP to <span class="bold">{0}</span>. Enter the OTP to conform your email.'.format(request.user.email)
                 return render(request,'conform_email.html',context)
             
             context['message'] = 'You need to wait to input your OTP'
@@ -253,12 +270,11 @@ class Conform_Email(View):
             context['wait_time_need'] = get_otp_input_wait_time_obj['wait_time_need']
             return render(request, 'conform_email.html',context)
         
-        email_resend_justifications_obj = email_resend_justifications(request)
-        context['message'] = 'We emailed a OTP to your email address. Enter the OTP to conform your email.'
+        context['message'] = 'We emailed a OTP to <span class="bold">{0}</span>. Enter the OTP to conform your email.'.format(request.user.email)
         if email_resend_justifications_obj['email_resend_available']:
             context['email_resend_available'] = True
         else:
-            context['time_wait_need'] = email_resend_justifications_obj['time_wait_need']
+            context['email_resend_time_wait_need'] = email_resend_justifications_obj['time_wait_need']
         return render(request,'conform_email.html',context)
 
     def post(self, request):
@@ -266,14 +282,18 @@ class Conform_Email(View):
             context = {}
             user_otp = request.POST.get('otp')
             otp_obj = Email_Verified.objects.get(user=request.user)
+            email_resend_justifications_obj = email_resend_justifications(request)
+            if otp_obj.blocked:
+                return redirect('block')
             if user_otp == None:
+                get_otp_input_wait_time_obj = get_otp_input_wait_time(request)
                 context['message'] = 'You need to wait in order to retry again.'
+                context['email_resend_time_wait_need'] = email_resend_justifications_obj['time_wait_need']
+                context['wait_time_need'] = get_otp_input_wait_time_obj['wait_time_need']
                 return render(request, 'conform_email.html',context)
             if len(user_otp) == 0:
                 context['message'] = 'Please enter a OTP..'
                 return render(request, 'conform_email.html',context)
-            if otp_obj.blocked:
-                return redirect('block')
             if otp_obj.otp_input_blocked:
                 get_otp_input_wait_time_obj = get_otp_input_wait_time(request)
                 if get_otp_input_wait_time_obj['waited_time'] > get_otp_input_wait_time_obj['wait_time_target']:
@@ -294,23 +314,31 @@ class Conform_Email(View):
         else:
             raise Http404()
     def otp_matched(self,request):
-        otp_obj = Email_Verified.objects.get(request.user)
+        otp_obj = Email_Verified.objects.get(user=request.user)
         otp_obj.email_verified = True
-        messages.success(request,'Your email verification successfull.')
+        otp_obj.once_email_verified = True
+        otp_obj.email_attempt_level = 1
+        otp_obj.save()
+        messages.success(request,'Your email ({0}) verification successfull.'.format(request.user.email))
         otp_obj.save()
         return redirect('home')
     def otp_mismatched(self,request):
         context = {}
         otp_obj = Email_Verified.objects.get(user=request.user)
+        email_resend_justifications_obj = email_resend_justifications(request)
+        if email_resend_justifications_obj['email_resend_available']:
+                context['email_resend_available'] = True
+        else:
+            context['email_resend_time_wait_need'] = email_resend_justifications_obj['time_wait_need']
         if otp_obj.attempt_remain > 0:
             otp_obj.attempt_remain -= 1
             if otp_obj.attempt_remain == 0:
                 otp_obj.otp_input_blocked = True
                 if otp_obj.otp_attempt_level <= 10:
-                    get_otp_input_wait_time_obj = get_otp_input_wait_time(request)
                     otp_obj.otp_attempt_level += 1
                     otp_obj.attempt_remain = 5
                     otp_obj.save()
+                    get_otp_input_wait_time_obj = get_otp_input_wait_time(request)
                     context['message'] = 'You have used up all of your tries. relax for a moment.'
                     context['input_disable'] = True
                     context['wait_time_need'] = get_otp_input_wait_time_obj['wait_time_need']
@@ -318,7 +346,7 @@ class Conform_Email(View):
                 otp_obj.blocked = True
                 return redirect('block')
             otp_obj.save()
-            context['message'] = 'your given OTP does not matched. enter the correct one. you have {0} tries'.format(otp_obj.attempt_remain)
+            context['message'] = 'Your given OTP does not matched. enter the correct one. <span class="bold">you have {0} tries</span>'.format(otp_obj.attempt_remain)
             context['attempt_remain'] = otp_obj.attempt_remain
             return render(request, 'conform_email.html',context)
     
@@ -333,7 +361,7 @@ def email_resend(request):
             otp_data_obj = send_otp(request)
             otp_data_obj['otp_obj'].email_attempt_level += 1
             otp_data_obj['otp_obj'].attempt_remain = 5
-            otp_data_obj['otp_obj'].otp_attempt_level = 1
+            otp_data_obj['otp_obj'].otp_attempt_level = 0
             otp_data_obj['otp_obj'].otp_input_blocked = False
             otp_data_obj['otp_obj'].save()
             return redirect('conform_email')
@@ -343,7 +371,41 @@ def email_resend(request):
 
 def block(request):
     otp_obj = Email_Verified.objects.get(user=request.user)
-    if otp_obj.email_verified:
+    if otp_obj.email_verified or request.user.socialaccount_set.exists():
         raise Http404()
     return render(request,'block.html')
                 
+class Change_Email(View):
+    def get(self,request):
+        otp_obj = Email_Verified.objects.get(user=request.user)
+        if otp_obj.email_verified or request.user.socialaccount_set.exists():
+            raise Http404()
+        context = {'email':request.user.email}
+        return render(request,'change_email_unverified.html', context)
+    def post(self,request):
+        context = {}
+        otp_obj = Email_Verified.objects.get(user=request.user)
+        if otp_obj.email_verified or request.user.socialaccount_set.exists():
+            raise Http404()
+        new_email = request.POST.get('new_email')
+        if len(new_email) == 0:
+                messages.error(request,'Please enter a valid Email..') 
+                return render(request,'change_email_unverified.html', context)
+        if User.objects.filter(email=new_email).exists():
+            context = {'email':new_email}
+            messages.error(request,'This email is already exist!!')
+            return render(request,"change_email_unverified.html",context)
+        context = {'email':new_email}
+        user = User.objects.get(id=request.user.id)
+        is_valid = validate_email(new_email)
+        if is_valid:
+            user.email = new_email
+            user.save()
+            otp_obj = Email_Verified.objects.get(user=request.user)
+            otp_obj.email_verified = False
+            otp_obj.otp_input_blocked = False
+            otp_obj.direct_email_send = True
+            otp_obj.save()
+            return redirect('conform_email')
+        messages.error(request,'This email ({0}) is not valid or not exist!!'.format(new_email))
+        return render(request,'change_email_unverified.html', context)

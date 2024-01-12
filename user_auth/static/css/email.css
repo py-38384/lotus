@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@700&family=Mulish&family=Poppins:wght@400;500&family=Prompt:wght@100;300;400;600&family=Quicksand:wght@300;400&family=Rajdhani:wght@300&family=Roboto+Condensed:wght@300;400;600&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Mulish', sans-serif;
+    font-weight: 400;
+}
+.container{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 50px;
+}
+.logo-container-a img{
+    width: 100px;
+}
+#otp-box{
+    width: 220px;
+    height: 35px;
+    margin-bottom: 15px;
+    padding: 0 5px;
+    border: none;
+    outline: none;
+    box-shadow: 0px 0px 7px rgb(204, 204, 204);
+}
+#otp-box:disabled{
+    background-color: rgb(240, 240, 240);
+    color: rgb(168, 168, 168);
+    box-shadow: none;
+}
+#otp-box:disabled::placeholder {
+    color: rgb(168, 168, 168);
+}  
+form input[type=submit]{
+    width: 80px;
+    height: 30px;
+    border: none;
+    background-color: #1294ff;
+    color: white;
+    outline: none;
+    cursor: pointer;
+}
+form input[type=submit]:hover{
+    background-color: #5ab5ff;
+}
+form input[type=submit]:disabled{
+    background-color: rgb(240, 240, 240);
+    color: rgb(168, 168, 168);
+}
+.otp-label{
+    margin-bottom: 10px;
+}
+.bold{
+    font-weight: 1000;
+}
+@media only screen and (max-width:400px)  {
+    .logo-container-a img{
+        width: 50px;
+    }
+    .container{
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 25px;
+    }
+}

@@ -12,6 +12,7 @@ class User(AbstractUser):
 class Email_Verified(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True,)
     email_verified = models.BooleanField(default=False,blank=True,null=True)
+    once_email_verified = models.BooleanField(default=False,blank=True,null=True)
     last_otp = models.CharField(max_length=60,blank=True,null=True)
     last_email_send = models.IntegerField(blank=True, null=True)
     last_otp_input_time = models.IntegerField(blank=True, null=True)
@@ -20,3 +21,4 @@ class Email_Verified(models.Model):
     email_attempt_level = models.IntegerField(blank=True, null=True)
     otp_attempt_level = models.IntegerField(blank=True, null=True)
     blocked = models.BooleanField(default=False,blank=True,null=True)
+    direct_email_send = models.BooleanField(default=False,blank=True,null=True)

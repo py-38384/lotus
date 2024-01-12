@@ -143,10 +143,11 @@ hr{
 .google:hover,
 .facebook:hover{
     background-color: black;
+    color: var(--primary-active);
 }
 .google:hover button,
 .facebook:hover button{
-    color: var(--main-color);
+    color: var(--primary);
 }
 .logo-image{
     width: 90px;
