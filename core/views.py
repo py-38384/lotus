@@ -10,6 +10,7 @@ from validate_email import validate_email
 from django.db.models import Q
 from random import randint
 from .models import *
+from .decorator import allowed_user
 from django.conf import settings
 from user_auth.models import *
 from user_auth import forms
@@ -58,7 +59,6 @@ def get_product_array(products):
 
 class Index(View):
     def get(self, request):
-        print('In to the index view')
         recent_product = []
         categories_arr = [] 
         one_week = 60*60*24*7
@@ -122,12 +122,11 @@ class UpdateItem(View):
             discount_price_cut = 0
             discount = False
 
-            customer, created = Customer.objects.get_or_create(user=request.user)
             product = Product.objects.get(id=productID)
-            order, created = Order.objects.get_or_create(customer=customer,complete=False)
+            cart, created = Cart.objects.get_or_create(user=request.user)
             
             if order_item_id=="undefined":
-                order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
+                order_item, created = OrderItem.objects.get_or_create(cart=cart, product=product)
                 if created:
                     order_item.color = color
                     order_item.size = size
@@ -140,7 +139,7 @@ class UpdateItem(View):
 
             else:
                 order_item_id = int(order_item_id)
-                order_item = OrderItem.objects.get(order__customer__user=request.user,id=order_item_id)
+                order_item = OrderItem.objects.get(cart__user=request.user,id=order_item_id)
                 if action == 'add':
                     order_item.quantity = (order_item.quantity+quantity)
                 elif action == 'remove':
@@ -151,7 +150,7 @@ class UpdateItem(View):
                     order_item.delete()
 
 
-            items = list(OrderItem.objects.filter(order=order.id))
+            items = list(OrderItem.objects.filter(cart=cart))
             for item in items:
                 if item.product.discount:
                     if item.product.discount > 0:
@@ -174,7 +173,7 @@ class UpdateItem(View):
 
             original_total_price = order_item.quantity*order_item.product.price
 
-            return JsonResponse({'id':order_item_id,'quantity':order_item.quantity,'total_items':total_items,'total_price':total_price.normalize(),'original_total_price':original_total_price.normalize(),'discount':discount,'subtotal':subtotal.normalize(),'total':(subtotal+settings.SHIPPING_CHARGE).normalize()})
+            return JsonResponse({'id':order_item_id,'quantity':order_item.quantity,'total_items':total_items,'total_price':total_price,'original_total_price':original_total_price,'discount':discount,'subtotal':subtotal,'total':(subtotal+settings.SHIPPING_CHARGE)})
         
 class Search(View):
     def get(self, request):
@@ -285,15 +284,14 @@ class Shop(View):
             return render(request,"shop.html", context)
     
 
-class Cart(View):
+class Cart_View(View):
     def get(self, request):
         product_obj = []
         items = []
         subtotal = 0
         if request.user.is_authenticated:
-            customer, created = Customer.objects.get_or_create(user=request.user)
-            order, created = Order.objects.get_or_create(customer=customer.id, complete=False,)
-            items = list(OrderItem.objects.filter(order=order.id))
+            cart, created = Cart.objects.get_or_create(user=request.user)
+            items = list(OrderItem.objects.filter(cart=cart))
         else:
             try:
                 cart = json.loads(request.COOKIES['cart'])
@@ -314,16 +312,16 @@ class Cart(View):
                         product_obj_element['discount'] = product.discount
                         discount_price_cut = product.price*(Decimal(product.discount)/Decimal(100))
                         discount_price = product.price-discount_price_cut
-                        product_obj_element['price'] = discount_price.normalize()
-                        product_obj_element['original_price'] = product.price.normalize()
-                        product_obj_element['total'] = ((product.price*cart[key]['quantity'])-(discount_price_cut*cart[key]['quantity'])).normalize()
-                        product_obj_element['original_total'] = (product.price*cart[key]['quantity']).normalize()
+                        product_obj_element['price'] = discount_price
+                        product_obj_element['original_price'] = product.price
+                        product_obj_element['total'] = ((product.price*cart[key]['quantity'])-(discount_price_cut*cart[key]['quantity']))
+                        product_obj_element['original_total'] = (product.price*cart[key]['quantity'])
                     else:
-                        product_obj_element['total'] = product.price*cart[key]['quantity'].normalize()
-                        product_obj_element['price'] = product.price.normalize()
+                        product_obj_element['total'] = product.price*cart[key]['quantity']
+                        product_obj_element['price'] = product.price
                 else:
-                    product_obj_element['total'] = product.price*cart[key]['quantity'].normalize()
-                    product_obj_element['price'] = product.price.normalize()
+                    product_obj_element['total'] = product.price*cart[key]['quantity']
+                    product_obj_element['price'] = product.price
                 image_obj = list(ProductImages.objects.filter(product=product))
                 if image_obj:
                     product_obj_element['image'] = image_obj[0].image
@@ -372,7 +370,7 @@ class Cart(View):
 class Order_Item_Delete(View):
     def get(self, request, productid):
         order_item = OrderItem.objects.get(id=productid)
-        if order_item.order.customer.user == request.user:
+        if order_item.cart.user == request.user:
             order_item.delete()
             return JsonResponse('Order item deleted',safe=False)
         else:
@@ -381,10 +379,18 @@ class Order_Item_Delete(View):
 
 class Checkout(View):
     def get(self, request):
-        if request.user.is_authenticated:
-            customer = Customer.objects.get(user=request.user)
-            order, created = Order.objects.get_or_create(customer=customer, complete=False,)
-            items = list(OrderItem.objects.filter(order=order.id))
+        context = {}
+        if request.user.is_authenticated and OrderItem.objects.filter(cart__user=request.user).exists():
+            cart = Cart.objects.get(user=request.user)
+            items = list(OrderItem.objects.filter(cart=cart))
+            context['items'] = items
+            if Customer.objects.filter(user=request.user).exists():
+                customer = Customer.objects.get(user=request.user)
+                shipping_details = ShippingDetails.objects.get(Customer=customer)
+                context['previous_shipping_details'] = shipping_details
+        elif not Cart.objects.filter(user=request.user).exists():
+            messages.error(request, "Add someting to the cart first")
+            return redirect('home')
         else:
             messages.warning(request,'You must login to continue')
             return redirect('login')
@@ -392,9 +398,106 @@ class Checkout(View):
         shipping = Decimal(settings.SHIPPING_CHARGE)
         for item in items:
             subtotal+=Decimal(item.total)
-        total = subtotal+shipping
-        context = {'customer':customer,'items':items, 'subtotal':subtotal, 'shipping':shipping, 'total':total}
+        context['subtotal'] = subtotal
+        context['shipping'] = shipping
+        context['total'] = subtotal+shipping
         return render(request,"checkout.html", context)
+
+    def post(self, request):
+        if request.user.is_authenticated and OrderItem.objects.filter(cart__user=request.user).exists():
+            full_name = request.POST.get('full_name')
+            email = request.POST.get('email')
+            mobile_number = request.POST.get('mobile_number')
+            primary_address = request.POST.get('primary_address')
+            city = request.POST.get('city')
+            district = request.POST.get('district')
+            province = request.POST.get('province')
+            zipcode = request.POST.get('zipcode')
+            notes = request.POST.get('notes')
+            payment_method = request.POST.get('payment_method')
+            context = {}
+            cart = Cart.objects.get(user=request.user)
+            customer, customer_created = Customer.objects.get_or_create(user=request.user)
+            if customer_created:
+                user = User.objects.get(id=request.user.id)
+                if user.first_name and user.last_name:
+                    customer.full_name = user.first_name + " " + user.last_name
+                else:
+                    customer.full_name = user.username
+                customer.mobile_number = user.mobile_number
+                customer.email = user.email
+                customer.save()
+            shipping_details, shipping_details_created = ShippingDetails.objects.get_or_create(Customer=customer)
+            if shipping_details_created:
+                shipping_details.full_name = customer.full_name
+                shipping_details.email = customer.email
+                shipping_details.mobile_number = customer.mobile_number
+            print("Payment method => {0}".format(payment_method))
+
+            order = None
+            if Order.objects.filter(customer=customer).exists():
+                old_order = Order.objects.filter(customer=customer)[0]
+                order = Order(customer=customer,customer_order_no=(old_order.customer_order_no+1),payment_method=payment_method,notes=notes)
+                order.save()
+            else:
+                order = Order(customer=customer,customer_order_no=1,payment_method=payment_method)
+                order.save()
+            shipping_details.order = order
+            if len(full_name)>0:
+                shipping_details.full_name = full_name
+            else:
+                context['name_error'] = "Please enter a name"
+                return render(request,'checkout.html',context)
+            
+            email_verified = validate_email(email_address=email,check_smtp=False,check_dns=False,check_blacklist=False)
+            if email_verified:
+                shipping_details.email = email
+            else:
+                context['email_error'] = "Please enter a valid email"
+                return render(request,'checkout.html',context)
+            
+            if len(mobile_number)>5:
+                shipping_details.mobile_number = mobile_number
+            else:
+                context['mobile_error'] = "Please enter a valid mobile number"
+                return render(request,'checkout.html',context)
+            
+            if len(primary_address)>5:
+                shipping_details.primary_address = primary_address
+            else:
+                context['address_error'] = "Please enter a valid address"
+                return render(request,'checkout.html',context)
+            
+            if len(city)>2:
+                shipping_details.city = city
+            else:
+                context['city_error'] = "Please enter a valid city"
+                return render(request,'checkout.html',context)
+            
+            if len(district)>2:
+                shipping_details.district = district
+            else:
+                context['district_error'] = "Please enter a valid district"
+                return render(request,'checkout.html',context)
+            
+            shipping_details.province = province
+
+            if len(zipcode)>2:
+                shipping_details.zipcode = zipcode
+            else:
+                context['zipcode_error'] = "Please enter a valid zipcode"
+                return render(request,'checkout.html',context)
+            shipping_details.save()
+            
+            order_items = list(OrderItem.objects.filter(cart=cart))
+            for order_item in order_items:
+                order_item.cart = None
+                order_item.order = order
+                order_item.save()
+            messages.success(request,'Order successfully placed.')
+            return redirect('home')
+        return redirect('home')
+
     
 
 class Contact(View):
@@ -440,9 +543,10 @@ class Detail(View):
         colors = product.colors.all()
 
         for order_item in order_items:
-            if order_item.order.customer.user == request.user and order_item.product == product:
-                has_order = True
-                break
+            if order_item.cart:
+                if order_item.cart.user == request.user and order_item.product == product:
+                    has_order = True
+                    break
 
         images = list(ProductImages.objects.filter(product=product))
         if images:
@@ -811,3 +915,13 @@ class Subscribe(View):
         else:
             messages.error(request,form.errors['email'])
             return redirect('home')
+
+@allowed_user(allowed_roles=['admin','staff'])
+def orders(request):
+    context = {}
+    return render(request,'orders.html',context)
+
+@allowed_user(allowed_roles=['admin','staff'])
+def order(request, id):
+    context = {'id':id}
+    return render(request,'order.html',context)

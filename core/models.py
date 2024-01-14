@@ -11,11 +11,9 @@ from PIL import Image
 
 class Customer(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=130, null=True, blank=True)
-    last_name = models.CharField(max_length=130, null=True, blank=True)
+    full_name = models.CharField(max_length=130, null=True, blank=True)
     mobile_number = models.CharField(max_length=20, null=True, blank=True)
-    primary_address = models.CharField(max_length=200,null=True, blank=True)
-    secondary_address = models.CharField(max_length=200,null=True, blank=True)
+    address = models.CharField(max_length=200,null=True, blank=True)
     email = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
@@ -50,7 +48,7 @@ class Color(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
-    price = models.DecimalField(null=True, max_digits=15, decimal_places=2)
+    price = models.DecimalField(null=True, max_digits=15, decimal_places=0)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     small_desc = models.CharField(max_length=255,null=True, blank=False)
@@ -106,16 +104,33 @@ class Review(models.Model):
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
+    customer_order_no = models.IntegerField(default=1,null=True,blank=True)
     date_orderd = models.DateTimeField(auto_now_add=True)
-    complete = models.BooleanField(default=False, null=True, blank=False)
+    new = models.BooleanField(default=True)
+    registered = models.BooleanField(default=False)
+    processing = models.BooleanField(default=False)
+    on_your_way = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
+    payment_method = models.CharField(max_length=100, null=True, blank=True)
+    paid = models.BooleanField(default=False,blank=True,null=True)
+    notes = models.CharField(max_length=200,blank=True,null=True)
     transaction_id = models.CharField(max_length=200, null=True)
 
     def __str__(self):
-        return str(self.id)
+        return str('{0}s {1}th order'.format(self.customer.user.username,self.customer_order_no))
     
+    class Meta:
+        ordering = ['-id']
+    
+class Cart(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str('{0}`s cart'.format(self.user.username))
 
 class OrderItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
     color = models.CharField(max_length=200,blank=True,null=True)
     size = models.CharField(max_length=200,blank=True,null=True)
@@ -123,7 +138,7 @@ class OrderItem(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.id)
+        return str('{0} => {1} '.format(self.product.name,self.quantity))
 
     @property
     def total(self):
@@ -131,17 +146,21 @@ class OrderItem(models.Model):
         return total
 
 
-class ShippingAddress(models.Model):
+class ShippingDetails(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
-    address = models.CharField(max_length=200, null=True)
+    full_name = models.CharField(max_length=50, null=True)
+    email = models.EmailField(null=True)
+    mobile_number = models.CharField(max_length=30, null=True)
+    primary_address = models.CharField(max_length=200, null=True)
     city = models.CharField(max_length=200, null=True)
-    state = models.CharField(max_length=200, null=True)
-    zipcode = models.CharField(max_length=200, null=True)
+    district = models.CharField(max_length=200, null=True)
+    province = models.CharField(max_length=200, null=True, blank=True)
+    zipcode = models.CharField(max_length=200, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.address)
+        return str(self.primary_address)
     
 
 class ContactUs(models.Model):

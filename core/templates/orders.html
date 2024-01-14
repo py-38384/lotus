@@ -1,0 +1,57 @@
+{% extends 'orders_base.html' %}
+{% load static %}
+{% block content %}
+<div class="search-div">
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" name="search_query " placeholder="Search order">
+        <input type="submit" value="search">
+    </form>
+</div>
+<div class="tabs">
+    <div class="new-orders orders-btn tab-active">New order</div>
+    <div class="registered-orders orders-btn">Registered order</div>
+    <div class="processing-orders orders-btn">Processing order</div>
+    <div class="on-your-way-orders orders-btn">On Your Way order</div>
+    <div class="complete-orders orders-btn">Completed order</div>
+</div>
+<div class="order-container">
+    <div class="order">
+        <div class="order-id">Order ID</div>
+        <div class="customer-name">Customer Name</div>
+        <div class="customer-order-number">Customer order number</div>
+        <div class="order-time">Order time</div>
+    </div>
+    <a href="" class="order">
+        <div class="order-id">3.</div>
+        <div class="customer-name">Piyal Hossein</div>
+        <div class="customer-order-number">4</div>
+        <div class="order-time">40 min ago</div>
+    </a>
+    <a href="" class="order">
+        <div class="order-id">3.</div>
+        <div class="customer-name">Piyal Hossein</div>
+        <div class="customer-order-number">4</div>
+        <div class="order-time">40 min ago</div>
+    </a>
+    <a href="" class="order">
+        <div class="order-id">3.</div>
+        <div class="customer-name">Piyal Hossein</div>
+        <div class="customer-order-number">4</div>
+        <div class="order-time">40 min ago</div>
+    </a>
+    <a href="" class="order">
+        <div class="order-id">3.</div>
+        <div class="customer-name">Piyal Hossein</div>
+        <div class="customer-order-number">4</div>
+        <div class="order-time">40 min ago</div>
+    </a>
+    <a href="" class="order">
+        <div class="order-id">3.</div>
+        <div class="customer-name">Piyal Hossein</div>
+        <div class="customer-order-number">4</div>
+        <div class="order-time">40 min ago</div>
+    </a>
+</div>
+<div class="load-more-btn-container"><div class="load-more">Load more</div></div>
+{% endblock content %}

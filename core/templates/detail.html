@@ -101,9 +101,9 @@
         {% endif %}
         
         {% if product.discount %}
-        <h3 class="font-weight-semi-bold">${{discount_price}}</h3><h3 class="font-weight-semi-bold mb-4"><del>${{product.price}}</del></h3>
+        <h3 class="font-weight-semi-bold">{{discount_price}} TAKA</h3><h3 class="font-weight-semi-bold mb-4"><del>{{product.price}} TAKA</del></h3>
         {% else %}
-        <h3 class="font-weight-semi-bold mb-4">${{product.price}}</h3>
+        <h3 class="font-weight-semi-bold mb-4">{{product.price}} TAKA</h3>
         {% endif %}
 
 

@@ -117,9 +117,9 @@ for (let i = 0; i < updateBtns.length; i++) {
           let after_total = current_total+item_total_difference;
           after_total = roundNumber(after_total,3)
 
-          item_total_price.innerHTML = "$"+after_item_total;
-          subtotal.innerHTML = "$"+after_subtotal;
-          total.innerHTML = "$"+after_total;
+          item_total_price.innerHTML = after_item_total+" TAKA";
+          subtotal.innerHTML = after_subtotal+" TAKA";
+          total.innerHTML = after_total+" TAKA";
           
         }else{
           if(quantity){
@@ -137,9 +137,9 @@ for (let i = 0; i < updateBtns.length; i++) {
           after_subtotal = roundNumber(after_subtotal,3)
           let after_total = current_total-item_total_difference;
           after_total = roundNumber(after_total,3)
-          item_total_price.innerHTML = "$"+after_item_total;
-          subtotal.innerHTML = "$"+after_subtotal;
-          total.innerHTML = "$"+after_total;
+          item_total_price.innerHTML = after_item_total+" TAKA";
+          subtotal.innerHTML = after_subtotal+" TAKA";
+          total.innerHTML = after_total+" TAKA";
 
 
           if(cart[productID]['quantity']<=0){
@@ -225,9 +225,9 @@ function updateUserOrder(productId, action, quantity, color='default', size='def
         var cart = document.querySelectorAll(".cart-icon");
 
         if (subtotal && total) {
-          subtotal.innerHTML = "$" + data["subtotal"];
-          total.innerHTML = "$" + data["total"];
-          product_total.innerHTML = "$" + data["total_price"];
+          subtotal.innerHTML = data["subtotal"]+" TAKA";
+          total.innerHTML = data["total"]+" TAKA";
+          product_total.innerHTML = data["total_price"]+" TAKA";
         }
         if (Number(data["quantity"]) <= 0) {
           row.remove();

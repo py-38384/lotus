@@ -208,7 +208,11 @@
       <a class="text-decoration-none" href="{% url 'offer' category.name %}">
         <div class="cat-item d-flex align-items-center mb-4">
           <div class="overflow-hidden" style="width: 100px; height: 100px">
+            {% if category.image %}
             <img class="img-fluid" src="{{category.image.url}}" alt="" />
+            {% else %}
+            <img class="img-fluid" src="{% static '/img/category.webp' %}" alt="" />
+            {% endif %}
           </div>
           <div class="flex-fill pl-3">
             <h6>{{category.name}}</h6>
