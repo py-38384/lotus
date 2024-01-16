@@ -12,7 +12,10 @@
     <nav class="orders-nav">
         <div class="nav-left"><a href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="logo"></a></div>
         <div class="nav-center"></div>
-        <div class="nav-right"><a href="/admin/">admin</a></div>
+        <div class="nav-right">
+            <a href="/">site</a>
+            <a href="/admin/">admin</a>
+        </div>
     </nav>
     {% block content %}
     {% endblock content %}

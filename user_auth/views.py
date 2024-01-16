@@ -10,7 +10,7 @@ from .models import *
 from .decorator import unauthenticated_user
 from django.contrib.auth.decorators import login_required
 from time import time
-from .send_email import send_email
+from sent_email.send_email import send_email
 from random import randint
 import random
 import string

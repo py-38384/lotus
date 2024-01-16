@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from . import forms as core_forms
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
@@ -918,8 +919,107 @@ class Subscribe(View):
 
 @allowed_user(allowed_roles=['admin','staff'])
 def orders(request):
+    load_more = False
     context = {}
+    all_orders = None
+    p = None
+    order_data = []
+    page = request.GET.get('order_page_indicator')
+    order_stage = request.GET.get('order_stage')
+    if order_stage:
+        if order_stage=='new_order':
+            all_orders = Order.objects.filter(new=True)
+            p = Paginator(all_orders,10)
+        elif order_stage=='registered_orders':
+            all_orders = Order.objects.filter(registered=True)
+            p = Paginator(all_orders,10)
+        elif order_stage=='processing_orders':
+            all_orders = Order.objects.filter(processing=True)
+            p = Paginator(all_orders,10)
+        elif order_stage=='on_your_way_orders':
+            all_orders = Order.objects.filter(on_your_way=True)
+            p = Paginator(all_orders,10)
+        elif order_stage=='complete_orders':
+            all_orders = Order.objects.filter(complete=True)
+            p = Paginator(all_orders,10)
+        if page:
+            orders = p.get_page(page)
+            number_of_pages = orders.paginator.num_pages
+            if number_of_pages > 1 and not page == str(number_of_pages):
+                load_more = True
+            for order in orders:
+                single_order = {}
+                single_order['order_id'] = order.id
+                single_order['customer_name'] = order.customer.full_name
+                single_order['customer_order_number'] = order.customer_order_no
+                single_order['timesince'] = order.timesince
+                order_data.append(single_order)
+            return JsonResponse({'order_data':order_data,'load_more':load_more})
+        order_data = []
+        orders = p.get_page(1)
+        for order in orders:
+                single_order = {}
+                single_order['order_id'] = order.id
+                single_order['customer_name'] = order.customer.full_name
+                single_order['customer_order_number'] = order.customer_order_no
+                single_order['timesince'] = order.timesince
+                order_data.append(single_order)
+        number_of_pages = orders.paginator.num_pages
+        if number_of_pages > 1 and not page == str(number_of_pages):
+            load_more = True
+        return JsonResponse({'order_data':order_data,'load_more':load_more})
+    
+    all_orders = Order.objects.filter(new=True)
+    p = Paginator(all_orders,10)
+    if page:
+        orders = p.get_page(page)
+        number_of_pages = orders.paginator.num_pages
+        if number_of_pages > 1 and not page == str(number_of_pages):
+            load_more = True
+        for order in orders:
+            single_order = {}
+            single_order['order_id'] = order.id
+            single_order['customer_name'] = order.customer.full_name
+            single_order['customer_order_number'] = order.customer_order_no
+            single_order['timesince'] = order.timesince
+            order_data.append(single_order)
+        return JsonResponse({'order_data':order_data,'load_more':load_more})
+    orders = p.get_page(1)
+    number_of_pages = orders.paginator.num_pages
+    if number_of_pages > 1 and not page == str(number_of_pages):
+        context['load_more'] = True
+    context['orders'] = orders
     return render(request,'orders.html',context)
+
+@allowed_user(allowed_roles=['admin','staff'])
+def search_order(request):
+    if request.method == 'POST':
+        all_orders = None
+        order = None
+        context = {}
+        q = request.POST.get('search_query')
+        context['query'] = q
+        if q and len(q)>0:
+            try:
+                order_id = int(q)
+                order = Order.objects.get(id=order_id)
+                context['order'] = order
+                return render(request,'search_order.html',context)
+            except Exception as e:
+                all_orders = list(Order.objects.filter(
+                    Q(customer__full_name__icontains=q) |
+                    Q(customer_order_no__icontains=q) |
+                    Q(payment_method__icontains=q) |
+                    Q(notes__icontains=q)
+                ))
+                all_order_product = OrderItem.objects.filter(Q(product__name__icontains=q)|Q(product__category__name__icontains=q))
+                print('line number 1015 ->',all_orders)
+                for order_product in all_order_product:
+                    pass
+                context['orders'] = all_orders
+                return render(request, 'search_order.html', context)
+        return redirect(request.META['HTTP_REFERER'])
+    raise Http404
 
 @allowed_user(allowed_roles=['admin','staff'])
 def order(request, id):

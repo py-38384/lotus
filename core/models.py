@@ -55,12 +55,12 @@ class Product(models.Model):
     desc = models.TextField(null=True, blank=False)
     add_info = models.TextField(null=True, blank=False)
     digital = models.BooleanField(default=False, null=True, blank=False)
-    has_size = models.BooleanField()
+    has_size = models.BooleanField(default=False)
     discount = models.IntegerField(blank=True,null=True)
     discount_price = models.IntegerField(blank=True,null=True)
     colors = models.ManyToManyField(Color,blank=True,null=True)
-    is_featured = models.BooleanField(blank=True,null=True)
-    todays_deals = models.BooleanField(blank=True,null=True)
+    is_featured = models.BooleanField(default=False)
+    todays_deals = models.BooleanField(default=False)
     date_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -103,7 +103,7 @@ class Review(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     customer_order_no = models.IntegerField(default=1,null=True,blank=True)
     date_orderd = models.DateTimeField(auto_now_add=True)
     new = models.BooleanField(default=True)
@@ -114,13 +114,18 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=100, null=True, blank=True)
     paid = models.BooleanField(default=False,blank=True,null=True)
     notes = models.CharField(max_length=200,blank=True,null=True)
-    transaction_id = models.CharField(max_length=200, null=True)
+    transaction_id = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return str('{0}s {1}th order'.format(self.customer.user.username,self.customer_order_no))
     
+    @property
+    def timesince(self):
+        return timesince.timesince(self.date_orderd)
+
     class Meta:
         ordering = ['-id']
+
     
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)

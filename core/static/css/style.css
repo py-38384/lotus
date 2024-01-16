@@ -10054,6 +10054,7 @@ a.text-dark:hover, a.text-dark:focus {
   border: 1px solid var(--primary);
 }
 .tabs,
+.redirect-orders-div,
 .order-container{
   margin: 0 240px;
 }
@@ -10073,10 +10074,12 @@ a.text-dark:hover, a.text-dark:focus {
   justify-content: center;
   border-bottom: 1px solid #d1d1d1;
   cursor: pointer;
+  color: gray;
 }
 .orders-btn:hover{
   color: var(--primary);
   background-color: #f1f1f1;
+  text-decoration: none;
 }
 .order-container{
   border-left: 1px solid #d1d1d1;
@@ -10098,6 +10101,11 @@ a.text-dark:hover, a.text-dark:focus {
   border-bottom: 1px solid #d1d1d1;
   padding: 30px;
 }
+.order div{
+  width: 300px;
+  text-align: center;
+  overflow: hidden;
+}
 .order:first-child:hover{
   background-color: #F5F5F5;
 }
@@ -10116,15 +10124,26 @@ a.text-dark:hover, a.text-dark:focus {
   align-items: center;
   justify-content: center;
 }
-.load-more-btn-container .load-more{
+.load-more-btn-container .load-more-btn{
   padding: 7px 9px;
   background-color: #F5F5F5;
   color: gray;
   border: 1px solid #d1d1d1;
   margin-bottom: 20px;
+  cursor: pointer;
+  user-select: none;
 }
-.load-more-btn-container .load-more:hover{
+.load-more-btn-container .load-more-btn:hover{
   background-color: #e8e8e8;
+}
+.order-container-wrapper{
+  margin-bottom: 200px;
+}
+.order-search-title{
+  border-bottom: 1px solid #d1d1d1;
+}
+.redirect-orders-div{
+  padding: 20px 10px;
 }
 
 @media only screen and (max-width: 1500px){
@@ -10192,8 +10211,12 @@ a.text-dark:hover, a.text-dark:focus {
     border-top: none;
     color: var(--primary);
   }
+  .redirect-orders-div,
   .order-container{
     margin: 0;
+  }
+  .redirect-orders-div{
+
   }
 }
 @media only screen and (max-width: 767px){

@@ -1,6 +1,7 @@
 {% extends 'orders_base.html' %}
 {% load static %}
 {% block content %}
+<div class="redirect-orders-div"><a href="{% url 'orders' %}" class="redirect-orders">Back To Order List</a></div>
 <div class="search-div">
     <form action="{% url 'search_order' %}" method="post">
         {% csrf_token %}
@@ -8,16 +9,31 @@
         <input type="submit" value="search">
     </form>
 </div>
-<div class="tabs">
-    <div class="new-orders orders-btn tab-active">New order</div>
-    <div class="registered-orders orders-btn">Registered order</div>
-    <div class="processing-orders orders-btn">Processing order</div>
-    <div class="on-your-way-orders orders-btn">On Your Way order</div>
-    <div class="complete-orders orders-btn">Completed order</div>
+<div class="tabs" style="height: 70px;">
+    <h2 class="new-orders orders-btn tab-active order-search-title" style="margin:0;">Search result for "{{query}}"
+    {% if order %}
+    <br>
+    <small>Showing result based on your given <b>order id</b></small>
+    {% endif %}
+    </h2>
+    
 </div>
 <div class="order-container-wrapper">
     <div class="order-container">
-        {% if orders %}
+        {% if order %}
+        <div class="order">
+            <div class="order-id">Order ID</div>
+            <div class="customer-name">Customer Name</div>
+            <div class="customer-order-number">Customer order number</div>
+            <div class="order-time">Order time</div>
+        </div>
+        <a href="{% url 'order' order.id %}" class="order">
+            <div class="order-id">{{order.id}}</div>
+            <div class="customer-name">{{order.customer.full_name}}</div>
+            <div class="customer-order-number">{{order.customer_order_no}}</div>
+            <div class="order-time">{{order.timesince}} ago</div>
+        </a>
+        {% elif orders %}
         <div class="order">
             <div class="order-id">Order ID</div>
             <div class="customer-name">Customer Name</div>
@@ -33,7 +49,7 @@
         </a>
         {% endfor %}
         {% else %}
-        <div class='order' style="align-item:center;justify-content:center;"><h1>No new order found</h1></div>
+        <div class='order' style="align-item:center;justify-content:center;"><h1>No order found</h1></div>
         {% endif %}
     </div>
     {% if load_more %}

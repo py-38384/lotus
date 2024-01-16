@@ -118,7 +118,6 @@ for (let i = 0; i < price_checkbox.length; i++) {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             let data = xhr.response;
-            console.log(data)
             document.querySelector('.product_div').innerHTML = data;
         }
       }

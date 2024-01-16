@@ -21,24 +21,24 @@
               {% if price_range_value.1 %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="1" checked id="price-1">
-                <label class="custom-control-label" for="price-1">$0 - $100</label>
+                <label class="custom-control-label" for="price-1">0 TAKA - 100 TAKA</label>
               </div>
               {% else %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="1" id="price-1">
-                <label class="custom-control-label" for="price-1">$0 - $100</label>
+                <label class="custom-control-label" for="price-1">0 TAKA - 100 TAKA</label>
               </div>
               {% endif %}
 
               {% if price_range_value.2 %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="2" checked id="price-2">
-                <label class="custom-control-label" for="price-2">$100 - $200</label>
+                <label class="custom-control-label" for="price-2">100 TAKA - 200 TAKA</label>
               </div>
               {% else %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="2" id="price-2">
-                <label class="custom-control-label" for="price-2">$100 - $200</label>
+                <label class="custom-control-label" for="price-2">100 TAKA - 200 TAKA</label>
               </div>
               {% endif %}
 
@@ -46,12 +46,12 @@
               {% if price_range_value.3 %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="3" checked id="price-3">
-                <label class="custom-control-label" for="price-3">$200 - $300</label>
+                <label class="custom-control-label" for="price-3">200 TAKA - 300 TAKA</label>
               </div>
               {% else %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="3" id="price-3">
-                <label class="custom-control-label" for="price-3">$200 - $300</label>
+                <label class="custom-control-label" for="price-3">200 TAKA - 300 TAKA</label>
               </div>
               {% endif %}
 
@@ -59,12 +59,12 @@
               {% if price_range_value.4 %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="4" checked id="price-4">
-                <label class="custom-control-label" for="price-4">$300 - $400</label>
+                <label class="custom-control-label" for="price-4">300 TAKA - 400 TAKA</label>
               </div>
               {% else %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="4" id="price-4">
-                <label class="custom-control-label" for="price-4">$300 - $400</label>
+                <label class="custom-control-label" for="price-4">300 TAKA - 400 TAKA</label>
               </div>
               {% endif %}
 
@@ -72,12 +72,12 @@
               {% if price_range_value.5 %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="5" checked id="price-5">
-                <label class="custom-control-label" for="price-5">$400 - $500</label>
+                <label class="custom-control-label" for="price-5">400 TAKA - 500 TAKA</label>
               </div>
               {% else %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="5" id="price-5">
-                <label class="custom-control-label" for="price-5">$400 - $500</label>
+                <label class="custom-control-label" for="price-5">400 TAKA - 500 TAKA</label>
               </div>
               {% endif %}
 
@@ -85,12 +85,12 @@
               {% if price_range_value.6 %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="6" checked id="price-6">
-                <label class="custom-control-label" for="price-6">$500--</label>
+                <label class="custom-control-label" for="price-6">500 TAKA --</label>
               </div>
               {% else %}
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                 <input type="checkbox" class="custom-control-input price-checkbox" data-range="6" id="price-6">
-                <label class="custom-control-label" for="price-6">$500--</label>
+                <label class="custom-control-label" for="price-6">500 TAKA --</label>
               </div>
               {% endif %}
 
@@ -175,9 +175,9 @@
                 class="d-flex align-items-center justify-content-center mt-2"
               >
               {% if product.discount %}
-              <h5>${{product.price}}</h5><h6 class="text-muted ml-2"><del>${{product.original_price}}</del></h6>
+              <h5>{{product.price}} TAKA</h5><h6 class="text-muted ml-2"><del>{{product.original_price}} TAKA</del></h6>
               {% else %}
-              <h5>${{product.price}}</h5><h6 class="text-muted ml-2"><del></del></h6>
+              <h5>{{product.price}} TAKA</h5><h6 class="text-muted ml-2"><del></del></h6>
               {% endif %}
               </div>
               <div

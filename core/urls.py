@@ -30,5 +30,6 @@ urlpatterns = [
     path('get_reviews/',views.GetReviews.as_view(),name='get_reviews'),
     path('subscribe/',views.Subscribe.as_view(),name='subscribe'),
     path('orders/',views.orders,name='orders'),
-    path('order/<str:id>',views.order,name='order')
+    path('order/<str:id>',views.order,name='order'),
+    path('search_order/',views.search_order,name='search_order')
 ]

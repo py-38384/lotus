@@ -118,7 +118,6 @@ function get_review_star(star) {
 }
 
 function getReviewHtml(obj,see_more=false) {
-  console.log(obj);
   let html = '';
   if(see_more){}else{
     html = '<h4 class="mb-4">' + obj["product_count"] + ' review for "' + obj["product"] + '"</h4>';
