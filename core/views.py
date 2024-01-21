@@ -30,8 +30,33 @@ def get_title(name,i):
 
 import math
 
-def get_product_array(products):
+def get_recreated_products(products={},product=None):
     product_arr = []
+    if product:
+        product_obj = {}
+        product_obj['id'] = product.id
+        product_obj['title'] = get_title(product.name,25)
+        product_obj['price'] = product.price.normalize()
+        product_obj['discount'] = product.discount
+        product_obj['review'] = None
+        product_obj['comment'] = None
+        if product.discount:
+            if product.discount>0:
+                product_obj['discount'] = product.discount
+                discount_price_cut = product.price*(Decimal(product.discount)/Decimal(100))
+                discount_price = product.price-discount_price_cut
+                product_obj['price'] = discount_price
+
+                product_obj['original_price'] = product.price
+
+        images = list(ProductImages.objects.filter(product=product))
+        if len(images) > 0:
+            product_obj['image'] = images[0].image
+        else:
+            product_obj['image'] = False
+        product_obj['raw_product'] = product
+        return product_obj
+        
     for product in products:
             product_obj = {}
             product_obj['id'] = product.id
@@ -55,6 +80,7 @@ def get_product_array(products):
             else:
                 product_obj['image'] = False
             product_arr.append(product_obj)
+        
     return product_arr
 
 
@@ -74,7 +100,7 @@ class Index(View):
             categories_obj['products'] = len(list(Product.objects.filter(category=category)))
             categories_arr.append(categories_obj)
 
-        featured_products = get_product_array(products)
+        featured_products = get_recreated_products(products=products)
         
         for product in all_products:
             date_created = product.date_added
@@ -86,7 +112,7 @@ class Index(View):
                 product_obj = {}
                 product_obj['id'] = product.id
                 product_obj['title'] = get_title(product.name,25)
-                product_obj['price'] = product.price.normalize()
+                product_obj['price'] = product.price
                 product_obj['review'] = None
                 product_obj['comment'] = None
                 if product.discount:
@@ -94,8 +120,8 @@ class Index(View):
                         product_obj['discount'] = product.discount
                         discount_price_cut = product.price*(Decimal(product.discount)/100)
                         discount_price = product.price-discount_price_cut
-                        product_obj['price'] = discount_price.normalize()
-                        product_obj['original_price'] = product.price.normalize()
+                        product_obj['price'] = discount_price
+                        product_obj['original_price'] = product.price
                 images = list(ProductImages.objects.filter(product=product))
                 if len(images) > 0:
                     product_obj['image'] = images[0].image
@@ -205,7 +231,7 @@ class Search(View):
             if (i==(page_number-2)and(page_number-2)>0) or (i==(page_number-1)and(page_number-1)>0) or  (i == page_number and last_page>1) or (i==(page_number+1)and(page_number+1)<=last_page) or (i==(products.number+2)and(products.number+2)<=last_page):
                 page_list.append(i)
 
-        product_arr = get_product_array(products)
+        product_arr = get_recreated_products(products=products)
 
         context = {'products':product_arr,'pagenator_object':products,'last_page':last_page,'page_list':page_list,'current_page':page_number,'q':q, 'total_product':len(products_array), 'total_inpage_product':len(product_arr)}
         
@@ -214,7 +240,7 @@ class Search(View):
 class Deals(View):
     def get(self, request):
         products = list(Product.objects.filter(todays_deals=True))
-        context = {'products':get_product_array(products)}
+        context = {'products':get_recreated_products(products=products)}
         return render(request,"deals.html", context)
 
 
@@ -276,7 +302,7 @@ class Shop(View):
                 page_list.append(i)
                 
 
-        product_arr = get_product_array(products)
+        product_arr = get_recreated_products(products=products)
 
         context = {'products':product_arr,'pagenator_object':products,'last_page':last_page,'page_list':page_list,'current_page':page_number,'price_range':price_range,'price_range_value':price_range_value,}
         if price_range and not page_number_request:
@@ -381,17 +407,19 @@ class Order_Item_Delete(View):
 class Checkout(View):
     def get(self, request):
         context = {}
-        if request.user.is_authenticated and OrderItem.objects.filter(cart__user=request.user).exists():
-            cart = Cart.objects.get(user=request.user)
-            items = list(OrderItem.objects.filter(cart=cart))
-            context['items'] = items
-            if Customer.objects.filter(user=request.user).exists():
-                customer = Customer.objects.get(user=request.user)
-                shipping_details = ShippingDetails.objects.get(Customer=customer)
-                context['previous_shipping_details'] = shipping_details
-        elif not Cart.objects.filter(user=request.user).exists():
-            messages.error(request, "Add someting to the cart first")
-            return redirect('home')
+        print('{0} type = {1}'.format(request.user,type(request.user)))
+        if request.user.is_authenticated:
+            if OrderItem.objects.filter(cart__user=request.user).exists():
+                cart = Cart.objects.get(user=request.user)
+                items = list(OrderItem.objects.filter(cart=cart))
+                context['items'] = items
+                if Customer.objects.filter(user=request.user).exists():
+                    customer = Customer.objects.get(user=request.user)
+                    shipping_details = ShippingDetails.objects.filter(Customer=customer)[0]
+                    context['previous_shipping_details'] = shipping_details
+            elif not Cart.objects.filter(user=request.user).exists():
+                messages.error(request, "Add someting to the cart first")
+                return redirect('cart')
         else:
             messages.warning(request,'You must login to continue')
             return redirect('login')
@@ -425,15 +453,18 @@ class Checkout(View):
                     customer.full_name = user.first_name + " " + user.last_name
                 else:
                     customer.full_name = user.username
-                customer.mobile_number = user.mobile_number
                 customer.email = user.email
+                if user.mobile_number:
+                    customer.mobile_number = user.mobile_number
+                else:
+                    customer.mobile_number = mobile_number
+                customer.address = primary_address
+
                 customer.save()
-            shipping_details, shipping_details_created = ShippingDetails.objects.get_or_create(Customer=customer)
-            if shipping_details_created:
-                shipping_details.full_name = customer.full_name
-                shipping_details.email = customer.email
-                shipping_details.mobile_number = customer.mobile_number
-            print("Payment method => {0}".format(payment_method))
+            shipping_details = ShippingDetails(Customer=customer)
+            shipping_details.full_name = customer.full_name
+            shipping_details.email = customer.email
+            shipping_details.mobile_number = customer.mobile_number
 
             order = None
             if Order.objects.filter(customer=customer).exists():
@@ -441,7 +472,7 @@ class Checkout(View):
                 order = Order(customer=customer,customer_order_no=(old_order.customer_order_no+1),payment_method=payment_method,notes=notes)
                 order.save()
             else:
-                order = Order(customer=customer,customer_order_no=1,payment_method=payment_method)
+                order = Order(customer=customer,customer_order_no=1,payment_method=payment_method,notes=notes)
                 order.save()
             shipping_details.order = order
             if len(full_name)>0:
@@ -488,7 +519,11 @@ class Checkout(View):
             else:
                 context['zipcode_error'] = "Please enter a valid zipcode"
                 return render(request,'checkout.html',context)
-            shipping_details.save()
+            try:
+                shipping_details.save()
+            except  Exception.DataError:
+                context['note_error'] = "Please enter a valid zipcode"
+                return render(request,'checkout.html',context)
             
             order_items = list(OrderItem.objects.filter(cart=cart))
             for order_item in order_items:
@@ -753,7 +788,7 @@ class Offer(View):
                 if (i==(page_number-2)and(page_number-2)>0) or (i==(page_number-1)and(page_number-1)>0) or  (i == page_number and last_page>1) or (i==(page_number+1)and(page_number+1)<=last_page) or (i==(products.number+2)and(products.number+2)<=last_page):
                     page_list.append(i)
 
-            product_arr = get_product_array(products)
+            product_arr = get_recreated_products(products=products)
             
             context = {'products':product_arr,'pagenator_object':products,'last_page':last_page,'page_list':page_list,'current_page':page_number,'keyword':keyword}
             return render(request,"offer.html", context)
@@ -785,7 +820,7 @@ class Discount(View):
             if (i==(page_number-2)and(page_number-2)>0) or (i==(page_number-1)and(page_number-1)>0) or  (i == page_number and last_page>1) or (i==(page_number+1)and(page_number+1)<=last_page) or (i==(products.number+2)and(products.number+2)<=last_page):
                 page_list.append(i)
 
-        product_arr = get_product_array(products)
+        product_arr = get_recreated_products(product=products)
 
         
         context = {'products':product_arr,'pagenator_object':products,'last_page':last_page,'page_list':page_list,'current_page':page_number,'keyword':keyword}
@@ -904,7 +939,102 @@ class YourReviews(View):
 class YourOrder(View):
     def get(self, request):
         context = {}
+        orders = None
+        new_order_count = 0
+        registered_order_count = 0
+        processing_order_count = 0
+        on_your_way_order_count = 0
+        complete_order_count = 0
+        if Customer.objects.filter(user=request.user).exists():
+            page = request.GET.get('order_page_indicator')
+            customer = Customer.objects.get(user=request.user)
+            raw_order_list = list(Order.objects.filter(customer=customer))
+            p=Paginator(raw_order_list, 5)
+            if page:
+                order_array = []
+                orders = p.get_page(page)
+                page_num = orders.paginator.num_pages
+                if int(page) < page_num:
+                    context['load_more'] = True
+                for order in orders:
+                    single_order_obj = {}
+                    single_order_obj['order_id'] = order.id
+                    single_order_obj['customer_order_no'] = order.customer_order_no
+                    single_order_obj['order_time'] = order.timesince
+                    if order.new:
+                        single_order_obj['order_status'] = "New"
+                    elif order.registered:
+                        single_order_obj['order_status'] = "Registered"
+                    elif order.processing:
+                        single_order_obj['order_status'] = "Processing"
+                    elif order.on_your_way:
+                        single_order_obj['order_status'] = "On Your Way"
+                    elif order.complete:
+                        single_order_obj['order_status'] = "Complete"
+                    order_array.append(single_order_obj)
+                context['order_array'] = order_array
+                return JsonResponse(context)
+            
+            orders = p.get_page(1)
+            context['orders'] = orders
+            page_num = orders.paginator.num_pages
+            if page_num > 1:
+                context['load_more'] = True
+            for order in raw_order_list:
+                if order.new:
+                    new_order_count+=1
+                elif order.registered:
+                    registered_order_count+=1
+                elif order.processing:
+                    processing_order_count+=1
+                elif order.on_your_way:
+                    on_your_way_order_count+=1
+                elif order.complete:
+                    complete_order_count+=1
+            if new_order_count > 0:
+                context['new_order_count'] = new_order_count
+            if registered_order_count > 0:
+                context['registered_order_count'] = registered_order_count
+            if processing_order_count > 0:
+                context['processing_order_count'] = processing_order_count
+            if on_your_way_order_count > 0:
+                context['on_your_way_order_count'] = on_your_way_order_count
+            if complete_order_count > 0:
+                context['complete_order_count'] = complete_order_count
         return render(request,"yourorder.html",context)
+        
+    
+class YourOrderDetail(View):
+    def get(self, request, id):
+        order_obj = None
+        context = {}
+        order_items_array = []
+        try:
+            order_obj = Order.objects.get(id=id)
+        except Exception as e:
+            return HttpResponse("Enter a valid order ID...")
+        order_items = list(OrderItem.objects.filter(order=order_obj))
+        for order_item in order_items:
+            new_order_item = {}
+            new_order_item['order_item'] = order_item
+            if order_item.product.discount:
+                new_order_item['discount'] = order_item.product.discount
+                discount_price_cut = order_item.product.price*(Decimal(order_item.product.discount)/Decimal(100))
+                discount_price = order_item.product.price-discount_price_cut
+                new_order_item['price'] = discount_price
+                new_order_item['original_price'] = order_item.product.price
+                new_order_item['total'] = discount_price*order_item.quantity
+            else:
+                new_order_item['price'] = order_item.product.price
+                new_order_item['total'] = order_item.product.price*order_item.quantity
+            new_order_item['product'] = get_recreated_products(product=new_order_item['order_item'].product)
+            order_items_array.append(new_order_item)
+
+        shipping_details_obj = ShippingDetails.objects.get(order=order_obj)
+        context['order'] = order_obj
+        context['order_items_array'] = order_items_array
+        context['shipping_details'] = shipping_details_obj
+        return render(request,'your_order_detail.html',context)
     
 class Subscribe(View):
     def post(self, request):
@@ -929,19 +1059,15 @@ def orders(request):
     if order_stage:
         if order_stage=='new_order':
             all_orders = Order.objects.filter(new=True)
-            p = Paginator(all_orders,10)
         elif order_stage=='registered_orders':
             all_orders = Order.objects.filter(registered=True)
-            p = Paginator(all_orders,10)
         elif order_stage=='processing_orders':
             all_orders = Order.objects.filter(processing=True)
-            p = Paginator(all_orders,10)
         elif order_stage=='on_your_way_orders':
             all_orders = Order.objects.filter(on_your_way=True)
-            p = Paginator(all_orders,10)
         elif order_stage=='complete_orders':
             all_orders = Order.objects.filter(complete=True)
-            p = Paginator(all_orders,10)
+        p = Paginator(all_orders,10)
         if page:
             orders = p.get_page(page)
             number_of_pages = orders.paginator.num_pages
@@ -1023,5 +1149,124 @@ def search_order(request):
 
 @allowed_user(allowed_roles=['admin','staff'])
 def order(request, id):
-    context = {'id':id}
+    if request.method == 'POST':
+        order_action = request.POST.get('action')
+        order = Order.objects.get(id=id)
+        if order_action == 'del':
+            context = {'order_id':order.id,'mission':'success','operation':'deletion'}
+            order.delete()
+            return JsonResponse(context)
+        
+        if order_action == 'payment-status-toggle':
+            if order.paid:
+                order.paid = False
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'payment_status_toggle','paid': False}
+                return JsonResponse(context)
+            order.paid = True
+            order.save()
+            context = {'order_id':order.id,'mission':'success','operation':'payment_status_toggle','paid': True}
+            return JsonResponse(context)
+
+        current_condition = ''
+        if order.new == True:
+                current_condition = 'new'
+        if order.registered == True:
+                current_condition = 'registered'
+        if order.processing == True:
+                current_condition = 'processing'
+        if order.on_your_way == True:
+                current_condition = 'on_your_way'
+        if order.complete == True:
+                current_condition = 'complete'
+        if order_action == 'prev':
+            if current_condition == 'new':
+                context = {'order_id':order.id,'mission':'failed','operation':'demotion','cause': 'order is on its most early condition.'}
+                return JsonResponse(context)
+            if current_condition == 'complete':
+                order.complete = False
+                order.on_your_way = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'demotion','old_condition':current_condition}
+                return JsonResponse(context)
+            if current_condition == 'on_your_way':
+                order.on_your_way = False
+                order.processing = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'demotion','old_condition':current_condition}
+                return JsonResponse(context)
+            if current_condition == 'processing':
+                order.processing = False
+                order.registered = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'demotion','old_condition':current_condition}
+                return JsonResponse(context)
+            if current_condition == 'registered':
+                order.registered = False
+                order.new = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'demotion','old_condition':current_condition}
+                return JsonResponse(context)
+            raise Http404
+        if order_action == 'next':
+            if current_condition == 'complete':
+                context = {'order_id':order.id,'mission':'failed','operation':'promotion','cause': 'order is on its last condition.'}
+                return JsonResponse(context)
+            if current_condition == 'new':
+                order.new = False
+                order.registered = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'promotion','old_condition':current_condition}
+                return JsonResponse(context)
+            if current_condition == 'registered':
+                order.registered = False
+                order.processing = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'promotion','old_condition':current_condition}
+                return JsonResponse(context)
+            if current_condition == 'processing':
+                order.processing = False
+                order.on_your_way = True
+                order.save()
+                print('entered here')
+                context = {'order_id':order.id,'mission':'success',
+                'operation':'promotion','old_condition':current_condition}
+                return JsonResponse(context)
+            if current_condition == 'on_your_way':
+                order.on_your_way = False
+                order.complete = True
+                order.save()
+                context = {'order_id':order.id,'mission':'success','operation':'promotion','old_condition':current_condition}
+                return JsonResponse(context)
+            raise Http404
+        raise Http404
+    order_obj = None
+    context = {}
+    order_items_array = []
+    try:
+        order_obj = Order.objects.get(id=id)
+    except Exception as e:
+        return HttpResponse("Enter a valid order ID...")
+    order_items = list(OrderItem.objects.filter(order=order_obj))
+    for order_item in order_items:
+        new_order_item = {}
+        new_order_item['order_item'] = order_item
+        if order_item.product.discount:
+            new_order_item['discount'] = order_item.product.discount
+            discount_price_cut = order_item.product.price*(Decimal(order_item.product.discount)/Decimal(100))
+            discount_price = order_item.product.price-discount_price_cut
+            new_order_item['price'] = discount_price
+            new_order_item['original_price'] = order_item.product.price
+            new_order_item['total'] = discount_price*order_item.quantity
+        else:
+            new_order_item['price'] = order_item.product.price
+            new_order_item['total'] = order_item.product.price*order_item.quantity
+        new_order_item['product'] = get_recreated_products(product=new_order_item['order_item'].product)
+        order_items_array.append(new_order_item)
+
+    shipping_details_obj = ShippingDetails.objects.get(order=order_obj)
+    context['order'] = order_obj
+    context['order_items_array'] = order_items_array
+    context['shipping_details'] = shipping_details_obj
+
     return render(request,'order.html',context)

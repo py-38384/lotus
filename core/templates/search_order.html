@@ -1,7 +1,7 @@
 {% extends 'orders_base.html' %}
 {% load static %}
 {% block content %}
-<div class="redirect-orders-div"><a href="{% url 'orders' %}" class="redirect-orders">Back To Order List</a></div>
+<div class="redirect-orders-div"><a href="{% url 'orders' %}" class="redirect-orders"><i class='bx bx-arrow-back'></i> Back To Order List</a></div>
 <div class="search-div">
     <form action="{% url 'search_order' %}" method="post">
         {% csrf_token %}

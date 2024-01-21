@@ -167,6 +167,9 @@ class ShippingDetails(models.Model):
     def __str__(self):
         return str(self.primary_address)
     
+    class Meta:
+        ordering = ['-id']
+    
 
 class ContactUs(models.Model):
     name = models.CharField(max_length=50)
@@ -187,3 +190,30 @@ class EmailList(models.Model):
 
     def __str__(self):
         return str(self.email)
+    
+class EssentialInformation(models.Model):
+    pymary_gmail = models.EmailField()
+    pymary_gmail_app_password = models.EmailField()
+    secondary_gmail = models.EmailField()
+    # hero_banner = CloudinaryField('image')
+    hero_title = models.CharField(max_length=100)
+    hero_desc = models.CharField(max_length=300)
+    # hero_banner_2 = CloudinaryField('image')
+    hero_2_title = models.CharField(max_length=100)
+    hero_2_desc = models.CharField(max_length=300)
+    # hero_banner_3 = CloudinaryField('image')
+    hero_3_title = models.CharField(max_length=100)
+    hero_3_desc = models.CharField(max_length=300)
+    # hero_banner_20 = CloudinaryField('image')
+    # hero_banner_40 = CloudinaryField('image')
+
+    hero_banner = models.ImageField()
+    hero_banner_2 = models.ImageField()
+    hero_banner_3 = models.ImageField()
+    hero_banner_20 = models.ImageField()
+    hero_banner_40 = models.ImageField()
+
+class VendorImage(models.Model):
+    # image = CloudinaryField('image')
+
+    image = models.ImageField()

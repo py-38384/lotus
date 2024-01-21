@@ -126,3 +126,52 @@ for (let i = 0; i < price_checkbox.length; i++) {
   });
 }
 
+
+function get_your_orders_html(obj){
+  let html = ``
+  for (let ele of obj.order_array){
+      html += `
+      <a href="/your_order_details/${ele.order_id}" class="order">
+        <div class="order-id">
+          ${ele.order_id}
+        </div>
+        <div class="order-number">
+          ${ele.customer_order_no}
+        </div>
+        <div class="order-time">
+          ${ele.order_time}
+        </div>
+        <div class="order-status">
+            <span class="${ele.order_status.toLowerCase()}">${ele.order_status}</span>
+        </div>
+      </a>
+      `
+  }
+  return html
+}
+
+
+let current_page_num = 1
+your_order_load_more_button = document.querySelector('.load-more-container button')
+your_order_load_more_button.addEventListener('click',(e)=>{
+  next_page = current_page_num+1
+  let url = "?order_page_indicator="+next_page;
+  console.log(url)
+  let xhr = new XMLHttpRequest();
+  xhr.open("get", url, true);
+  xhr.onload = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+          let data = JSON.parse(xhr.response);
+          if(!data.load_more){
+            e.target.style.display = "none";
+          }
+          console.log(data)
+          const html = get_your_orders_html(data)
+          document.querySelector('.your_order_container').innerHTML += html
+          current_page_num++
+      }
+    }
+  }
+  xhr.send()
+})

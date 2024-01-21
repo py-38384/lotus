@@ -1,8 +1,75 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div style="height:40vh;">
-<h3 style="margin-left:30px;">Your order</h3>
-<p style="margin-left:30px;">this function is not intended to be fully developed. for more information contect to site developer </p>
+<div style="min-height:40vh;">
+    <h3 style="margin-left:30px;">Your orders</h3>
+    <p style="margin-left:30px;">You have
+        {% if new_order_count %}
+        {{new_order_count}} new order 
+        {% endif %}
+        {% if registered_order_count %}
+        {{registered_order_count}} registered order 
+        {% endif %}
+        {% if processing_order_count %}
+        {{processing_order_count}} processing order 
+        {% endif %}
+        {% if on_your_way_order_count %}
+        {{on_your_way_order_count}} on your way order 
+        {% endif %}
+        {% if complete_order_count %}
+        {{complete_order_count}} complete order 
+        {% endif %}
+    </p>
+    <div class="your_order_container">
+        {% if orders %}
+        <div class="order-titles-container order">
+            <div class="order-number">
+                Order ID
+            </div>
+            <div class="order-number">
+                Your Order Number
+            </div>
+            <div class="order-time">
+                Order time
+            </div>
+            <div class="order-status">
+                Order status
+            </div>
+        </div>
+        {% for order in orders %}
+        <a href="/your_order_details/{{order.id}}" class="order">
+            <div class="order-id">
+                {{order.id}}
+            </div>
+            <div class="order-number">
+                {{order.customer_order_no}}
+            </div>
+            <div class="order-time">
+                {{order.timesince}}
+            </div>
+            <div class="order-status">
+                {% if order.new %}
+                <span class="new">New</span>
+                {% elif order.registered %}
+                <span class="registered">Registered</span>
+                {% elif order.processing %}
+                <span class="processing">Processing</span>
+                {% elif order.on_your_way %}
+                <span class="on-your-way">On Your Way</span>
+                {% elif order.complete %}
+                <span class="complete">Complete</span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+        {% else %}
+        <h4>You have no order in placed. shop <a href="{% url 'shop' %}">now</a></h4>
+        {% endif %}
+    </div>
+    {% if load_more %}
+    <div class="load-more-container">
+        <button>Load more</button>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

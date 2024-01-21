@@ -99,8 +99,11 @@
                             required>
                         </div>
                         <div class="col-md-12 form-group">
+                            {% if note_error %}
+                            <div class="error">{{note_error}}</div>
+                            {% endif %}
                             <label>notes</label>
-                            <textarea class="form-control" type="text" name="notes" placeholder="Near the mosjid market"></textarea>
+                            <textarea maxlength="200" class="form-control" type="text" name="notes" placeholder="Near the mosjid market"></textarea>
                         </div>
                         <div class="col-md-12 form-group">
                             <div class="">

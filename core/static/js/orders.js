@@ -1,7 +1,26 @@
 const tab_btns = document.querySelectorAll('.orders-btn')
+const order_action_buttons = document.querySelectorAll('.order_action_buttons')
 const load_more_btn = document.querySelector('.load-more-btn')
+const payment_condition_checkbox = document.querySelector('.payment-condition-checkbox')
 let order_page_indicator = 2
 let order_active_stage = 'new_order'
+
+function getToken(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getToken("csrftoken");
+
 function get_HTML_for_order_and_load_btn_with_column_title(obj_array){
     let html =  `
                 <div class="order">
@@ -107,5 +126,41 @@ if(load_more_btn){
         }
         xhr.send()
 
+    })
+}
+
+if(order_action_buttons){
+    order_action_buttons.forEach((element)=>{
+        element.addEventListener('click',(event)=>{
+            const id = event.target.dataset.id
+            const action = event.target.dataset.action
+            if(action==="del"){
+                const myModalEl = document.getElementById('orderDeleteModal')
+                const modal = bootstrap.Modal.getInstance(myModalEl)
+                modal.hide()
+            }
+            const param = `action=${action}`
+            const url = `/order/${id}`
+            let xhr = new XMLHttpRequest();
+            xhr.open("post", url, true);
+            xhr.onload = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let data = JSON.parse(xhr.response)
+                    if(data.operation === 'deletion'){
+                        location.replace('/orders/')
+                    }else{
+                        location.reload()
+                        if(data.mission === "failed"){
+                            alert(data.cause)
+                        }
+                    }
+                }
+            }
+            };
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(param);
+        })
     })
 }
