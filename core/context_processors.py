@@ -51,3 +51,8 @@ def category(request):
 def subscribe_newsletter(request):
     subscribe_form = SubscribeForm()
     return {'subscribe_form':subscribe_form}
+
+def landing_page_data(request):
+    lprd_obj = LandingPageRelatedData.objects.get(id=1)
+    vendor_img_obj = list(VendorImage.objects.all())
+    return {'lprd_obj':lprd_obj,'vendor_img_obj':vendor_img_obj}

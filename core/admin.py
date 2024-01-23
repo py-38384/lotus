@@ -12,6 +12,8 @@ admin.site.register(ShippingDetails)
 admin.site.register(Color)
 admin.site.register(ContactUs)
 admin.site.register(EmailList)
+admin.site.register(LandingPageRelatedData)
+admin.site.register(VendorImage)
 
 
 class ProductImageAdmin(admin.StackedInline):

@@ -24,6 +24,7 @@ urlpatterns = [
     path('your_reviews/',login_required(views.YourReviews.as_view()),name='your_reviews'),
     path('your_order/',login_required(views.YourOrder.as_view()),name='your_order'),
     path('your_order_details/<str:id>',login_required(views.YourOrderDetail.as_view()),name='your_order_details'),
+    path('your_order_delete/',login_required(views.YourOrderDelete.as_view()),name='your_order_delete'),
     path('add_review/',login_required(views.AddReview.as_view()),name='add_review'),
     path('add_review_for_account_manage/',login_required(views.AddReviewForAccountManage.as_view()),name='add_review_for_account_manage'),
     path('get_review/',login_required(views.GetReview.as_view()),name='get_review'),

@@ -18,20 +18,25 @@ import cloudinary.uploader
 import cloudinary.api
 
 cloudinary.config( 
-  cloud_name = "do2afaasp", 
-  api_key = "723866855757829", 
-  api_secret = "KvF-BG5fagy-fHln_h81liY9Q-0"
+  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+  api_key = os.environ.get('CLOUDINARY_API_KEY'), 
+  api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hdoyt4cmxtcx)vz60ua%)+m)+$h0=zs9u1w+mh07w*!%h@6po@'
+# SECRET_KEY = 'django-insecure-hdoyt4cmxtcx)vz60ua%)+m)+$h0=zs9u1w+mh07w*!%h@6po@'
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,7 +48,6 @@ SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
-    'django_apscheduler',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,6 +57,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'user_auth.apps.UserAuthConfig',
 
+    'django_apscheduler',
+    
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -95,6 +101,7 @@ TEMPLATES = [
                 'core.context_processors.category',
                 'core.context_processors.get_user_info',
                 'core.context_processors.subscribe_newsletter',
+                'core.context_processors.landing_page_data',
             ],
         },
     },
@@ -120,11 +127,11 @@ WSGI_APPLICATION = 'mycart.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mycartdb',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
     }
 }
 
@@ -175,10 +182,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 APSCHEDULER_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 EMAIL_BACKEND=  "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'WorkWithPiyal@gmail.com' 
-EMAIL_HOST_PASSWORD = 'wrgp kqoh cqtq hagv'
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ.get('PRIMARY_EMAIL_SMTP_SERVER')
+EMAIL_HOST_USER = os.environ.get('PRIMARY_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('PRIMARY_EMAIL_PASSWORD')
+EMAIL_PORT = os.environ.get('PRIMARY_EMAIL_SMTP_SERVER_PORT')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
@@ -202,8 +209,8 @@ SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'EMAIL_AUTHENTICATION': True,
         'APP': {
-            'client_id': '383616365376-177in9c4m8hkjm8he9aup6ff6fllq6l3.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
+            'secret': os.environ.get('GOOGLE_SECRET'),
             'key': ''
         }
     },

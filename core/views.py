@@ -1036,6 +1036,20 @@ class YourOrderDetail(View):
         context['shipping_details'] = shipping_details_obj
         return render(request,'your_order_detail.html',context)
     
+class YourOrderDelete(View):
+    def post(self, request):
+        id = request.POST.get('id')
+        if id:
+            order = Order.objects.get(id=id)
+            if Customer.objects.filter(user=request.user).exists():
+                customer = Customer.objects.get(user=request.user)
+                if customer == order.customer:
+                    order.delete()
+                    return JsonResponse({'operation':'successful'})
+                return JsonResponse({'operation':'failed','cause':'Customer not does not match!'})
+            return JsonResponse({'operation':'failed','cause':'Customer not exist!'})
+        return JsonResponse({'operation':'failed','cause':'ID not provided!'})
+
 class Subscribe(View):
     def post(self, request):
         form = core_forms.SubscribeForm(request.POST)
@@ -1207,7 +1221,6 @@ def order(request, id):
                 order.save()
                 context = {'order_id':order.id,'mission':'success','operation':'demotion','old_condition':current_condition}
                 return JsonResponse(context)
-            raise Http404
         if order_action == 'next':
             if current_condition == 'complete':
                 context = {'order_id':order.id,'mission':'failed','operation':'promotion','cause': 'order is on its last condition.'}
@@ -1238,7 +1251,6 @@ def order(request, id):
                 order.save()
                 context = {'order_id':order.id,'mission':'success','operation':'promotion','old_condition':current_condition}
                 return JsonResponse(context)
-            raise Http404
         raise Http404
     order_obj = None
     context = {}

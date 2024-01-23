@@ -2,6 +2,28 @@
 {% load static %}
 {% block content %}
 
+<div class="modal model-zoom-in" id="orderDeleteModal" tabindex="-1" aria-labelledby="orderDeleteModalLabel" data-tor-parent="show">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" data-tor="show(p):{scale.from(75) fade.in} quad">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="orderDeleteModalLabel">
+                Cancel order?
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="text-align:left;">
+            Are you really want to cancel this order?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button data-id={{order.id}} data-action="del" class="btn btn-primary your_order_delete_button reject-button">
+                Cancel
+            </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="redirect-order-div return-button order-responsive-margin"><a href="{% url 'your_order' %}" class="redirect-order"><i class='bx bx-arrow-back'></i> Back To Your Order List</a></div>
 <div class="order-detail-container-wrapper">
     <div style="margin-bottom: 10px;" class="main-container order-responsive-margin">
@@ -98,6 +120,11 @@
                 <div class="shipping-province"><span>Province: </span><span class="main-info info-highlight">{{shipping_details.province}}</span></div>
                 <div class="shipping-zipcode"><span>Zipcode: </span><span class="main-info info-highlight">{{shipping_details.zipcode}}</span></div>
             </div>
+        </div>
+        <div class="order-actions">
+            <button style='margin-top:50px' class="Reject-order Reject-order-trigger" data-bs-toggle="modal" data-bs-target="#orderDeleteModal" type="button">
+                Delete this Order
+            </button>
         </div>
     </div>
 </div>

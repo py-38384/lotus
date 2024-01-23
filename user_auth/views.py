@@ -5,15 +5,20 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from validate_email import validate_email
 from .forms import CreateUserForm
+from django.conf import settings
 from django.views import View
 from .models import *
 from .decorator import unauthenticated_user
 from django.contrib.auth.decorators import login_required
 from time import time
-from sent_email.send_email import send_email
 from random import randint
 import random
 import string
+import sys
+sys.path.append("..")
+from .email.send_email import send_email
+import os
+
 
 # {% provider_login_url 'google' %}
 
@@ -29,13 +34,13 @@ def send_otp(request):
     otp = get_otp(randint(10,25))
     email_body = 'this is your OTP to verify your email -> <b>{0}</b><br> Lotus team'.format(otp)
     email_result = send_email(
-        sender_email='workwithpiyal@gmail.com',
+        sender_email=os.environ.get('PRIMARY_EMAIL'),
         receiver_email=request.user.email,
-        sender_account_pass='wrgp kqoh cqtq hagv',
+        sender_account_pass=os.environ.get('PRIMARY_EMAIL_PASSWORD'),
         mail_subject='Verify your email.',
         email_body=email_body
         )
-    if email_result:
+    if email_result == True:
         otp_obj = Email_Verified.objects.get(user=request.user)
         otp_obj.last_otp = otp
         otp_obj.last_email_send = int(time())

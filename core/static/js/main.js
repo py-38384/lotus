@@ -153,25 +153,52 @@ function get_your_orders_html(obj){
 
 let current_page_num = 1
 your_order_load_more_button = document.querySelector('.load-more-container button')
-your_order_load_more_button.addEventListener('click',(e)=>{
-  next_page = current_page_num+1
-  let url = "?order_page_indicator="+next_page;
-  console.log(url)
-  let xhr = new XMLHttpRequest();
-  xhr.open("get", url, true);
-  xhr.onload = () => {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-          let data = JSON.parse(xhr.response);
-          if(!data.load_more){
-            e.target.style.display = "none";
-          }
-          console.log(data)
-          const html = get_your_orders_html(data)
-          document.querySelector('.your_order_container').innerHTML += html
-          current_page_num++
+if(your_order_load_more_button){
+  your_order_load_more_button.addEventListener('click',(e)=>{
+    next_page = current_page_num+1
+    let url = "?order_page_indicator="+next_page;
+    console.log(url)
+    let xhr = new XMLHttpRequest();
+    xhr.open("get", url, true);
+    xhr.onload = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            let data = JSON.parse(xhr.response);
+            if(!data.load_more){
+              e.target.style.display = "none";
+            }
+            console.log(data)
+            const html = get_your_orders_html(data)
+            document.querySelector('.your_order_container').innerHTML += html
+            current_page_num++
+        }
       }
     }
-  }
-  xhr.send()
-})
+    xhr.send()
+  })
+}
+
+const your_order_delete_button = document.querySelector('.your_order_delete_button')
+if (your_order_delete_button){
+  your_order_delete_button.addEventListener('click',(e)=>{
+    order_id = e.target.dataset.id
+    const param = "id="+order_id
+    let url = "/your_order_delete/"
+    let xhr = new XMLHttpRequest();
+    xhr.open("post", url, true);
+    xhr.onload = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            let data = JSON.parse(xhr.response);
+            if(data.operation === "successful"){
+              location.replace('/your_order/')
+            }
+            console.log(data)
+        }
+      }
+    }
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.send(param);
+    })
+}

@@ -130,7 +130,9 @@ function getReviewHtml(obj,see_more=false) {
   }
   let review_star = "";
   for (let i = 0; i < obj["reviews"].length; i++) {
-    if(obj['reviews'][i]['user']['user_email']===user){
+    const review_user_email = obj['reviews'][i]['user']['user_email']
+    const review_user_name = obj['reviews'][i]['user']['user_name']
+    if(review_user_name===user||review_user_email===user){
       review_action_buttons = `
       <span class="review-action-button-edit review-action-button" onclick="edit_review(this,event,${obj["reviews"][i]["id"]})">Edit</span><span class="review-action-button-delete review-action-button" onclick="delete_review(this,event,${obj["reviews"][i]["id"]})">Delete</span>
       `;
@@ -305,7 +307,8 @@ function delete_review(element, event, review_id) {
         if('success' in data){
           deleted_review_div.remove();
         }
-        review_header.innerHTML = '<h4 class="mb-4">' + data['total_review'] + ' review for "' + data["product"] + '"</h4>';
+        // review_header.innerHTML = '<h4 class="mb-4">' + data['total_review'] + ' review for "' + data["product"] + '"</h4>';
+        review_header.innerHTML = `${data['total_review']} review for "${data["product"]}"`;
       }
     }
   };

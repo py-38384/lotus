@@ -2,3 +2,4 @@
 .vscode
 .vercel
 __pycache__
+.env
