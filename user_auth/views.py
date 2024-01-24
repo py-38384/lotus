@@ -223,6 +223,10 @@ def registrationView(request):
                 if is_valid:
                     user = authenticate(request, email=email, password=password)
                     login(request,user)
+                    email_verified_obj, email_verified_obj_created = Email_Verified.objects.get_or_create(user=request.user)
+                    if email_verified_obj_created:
+                        email_verified_obj.direct_email_send = True
+                        email_verified_obj.save()
                     return redirect('conform_email')
                 messages.error(request,'Your email is not valid or does not Exist!')
                 return render(request,'register.html',context)
@@ -251,7 +255,6 @@ class Conform_Email(View):
                 otp_data_obj['otp_obj'].email_attempt_level += 1
             otp_data_obj['otp_obj'].save()
             email_resend_justifications_obj = email_resend_justifications(request)
-            print('{0}, email sender address -> {1}'.format(otp_data_obj['email_status'],request.user.email))
             context['message'] = 'We emailed a OTP to <span class="bold">{0}</span>. Enter the OTP to conform your email.'.format(request.user.email)
             context['email_resend_time_wait_need'] = email_resend_justifications_obj['time_wait_need']
             return render(request, 'conform_email.html',context)
