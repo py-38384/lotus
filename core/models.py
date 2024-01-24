@@ -23,8 +23,7 @@ class Customer(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=200, null=True)
     small_desc = models.CharField(max_length=255, null=True, blank=True)
-    image = models.ImageField(upload_to="category_image/",null=True,blank=True)
-    # image = CloudinaryField('image')
+    image = CloudinaryField('image')
 
     def __str__(self):
         return self.name
@@ -81,8 +80,7 @@ class Product(models.Model):
 
 class ProductImages(models.Model):
     product = models.ForeignKey(Product,blank=True,null=True,default=None,on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="product_images/",null=True,blank=True)
-    # image = CloudinaryField('image')
+    image = CloudinaryField('image')
 
     def __str__(self):
         return self.product.name
@@ -193,38 +191,31 @@ class EmailList(models.Model):
         return str(self.email)
     
 class LandingPageRelatedData(models.Model):
-    # hero_banner = CloudinaryField('image')
+    hero_banner = CloudinaryField('image')
     hero_title = models.CharField(max_length=30,blank=True,null=True)
     hero_desc = models.CharField(max_length=300,blank=True,null=True)
     hero_button_text = models.CharField(max_length=100,default='Click Here',blank=True,null=True)
     hero_button_link = models.CharField(max_length=500,blank=True,null=True)
-    # hero_banner_2 = CloudinaryField('image')
+    hero_banner_2 = CloudinaryField('image')
     hero_2_title = models.CharField(max_length=30,blank=True,null=True)
     hero_2_desc = models.CharField(max_length=300,blank=True,null=True)
     hero_2_button_text = models.CharField(max_length=100,default='Click Here',blank=True,null=True)
     hero_2_button_link = models.CharField(max_length=500,blank=True,null=True)
-    # hero_banner_3 = CloudinaryField('image')
+    hero_banner_3 = CloudinaryField('image')
     hero_3_title = models.CharField(max_length=30,blank=True,null=True)
     hero_3_desc = models.CharField(max_length=300,blank=True,null=True)
     hero_3_button_text = models.CharField(max_length=100,default='Click Here',blank=True,null=True)
     hero_3_button_link = models.CharField(max_length=500,blank=True,null=True)
-    # hero_banner_20 = CloudinaryField('image')
-    # hero_banner_40 = CloudinaryField('image')
-
-    hero_banner = models.ImageField()
-    hero_banner_2 = models.ImageField()
-    hero_banner_3 = models.ImageField()
-    hero_banner_20 = models.ImageField()
-    hero_banner_40 = models.ImageField()
+    hero_banner_20 = CloudinaryField('image')
+    hero_banner_40 = CloudinaryField('image')
 
     def __str__(self):
         return "Primary Object (this object should be only one)"
 
 
 class VendorImage(models.Model):
-    # image = CloudinaryField('image')
     vendor_name = models.CharField(max_length=100,blank=True,null=True)
-    image = models.ImageField()
+    image = CloudinaryField('image')
 
     def __str__(self):
         if self.vendor_name:
