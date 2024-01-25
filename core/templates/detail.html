@@ -313,7 +313,7 @@
                       {% elif review.user.socialaccount_set.all.0.get_avatar_url %}
                       src="{{review.user.socialaccount_set.all.0.get_avatar_url}}"
                       {% else %}
-                      src="{% static 'img/review_default_user_dp.png' %}/"
+                      src="{% static 'img/review_default_user_dp.png' %}"
                       {% endif %}
                       alt="Image"
                       class="img-fluid mr-3 mt-1"
