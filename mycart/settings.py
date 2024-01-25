@@ -42,7 +42,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1','lotus-production-9a8e.up.railway.app']
-CSRF_TRUSTED_ORIGINS = ['lotus-7pwc.onrender.com','127.0.0.1','lotus-production-9a8e.up.railway.app']
 
 SITE_ID = 1
 
@@ -82,6 +81,8 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "user_auth.middleware.SimpleMiddleware"
 ]
+
+CSRF_TRUSTED_ORIGINS = ['lotus-7pwc.onrender.com','127.0.0.1','https://*.railway.app']
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
