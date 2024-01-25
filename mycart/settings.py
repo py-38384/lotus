@@ -41,7 +41,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1','https://lotus-8umxfz3gk-py-38384.vercel.app/']
+ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1','https://lotus-8umxfz3gk-py-38384.vercel.app/','.vercel.app']
 
 SITE_ID = 1
 
