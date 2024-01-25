@@ -41,7 +41,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1']
+ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1','https://lotus-8umxfz3gk-py-38384.vercel.app/']
 
 SITE_ID = 1
 
@@ -233,3 +233,4 @@ ACCOUNT_EMAIL_REQUIRED=True
 ACCOUNT_CHANGE_EMAIL=True
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 LOGIN_REDIRECT_URL = "home"
+WSGI_APPLICATION = 'mycart.wsgi.app'
