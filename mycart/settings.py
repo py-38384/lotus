@@ -39,7 +39,7 @@ load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1','lotus-production-9a8e.up.railway.app']
 
@@ -82,7 +82,7 @@ MIDDLEWARE = [
     "user_auth.middleware.SimpleMiddleware"
 ]
 
-CSRF_TRUSTED_ORIGINS = ['lotus-7pwc.onrender.com','127.0.0.1','https://*.railway.app']
+CSRF_TRUSTED_ORIGINS = ['http://lotus-7pwc.onrender.com','http://127.0.0.1:8000/','https://*.railway.app']
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
