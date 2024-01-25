@@ -223,6 +223,10 @@ def registrationView(request):
                 if is_valid:
                     user = authenticate(request, email=email, password=password)
                     login(request,user)
+                    email_verified_obj, email_verified_obj_created = Email_Verified.objects.get_or_create(user=request.user)
+                    if email_verified_obj_created:
+                        email_verified_obj.direct_email_send = True
+                        email_verified_obj.save()
                     return redirect('conform_email')
                 messages.error(request,'Your email is not valid or does not Exist!')
                 return render(request,'register.html',context)
