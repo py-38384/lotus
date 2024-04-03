@@ -232,6 +232,7 @@ def registrationView(request):
                 email_verified_obj = Email_Verified.objects.create(user=request.user)
                 email_verified_obj.email_verified = True
                 email_verified_obj.save()
+                messages.success(request,'Your email account creation successfull.'.format(request.user.email))
                 return redirect('home')
             else:
                 context['form'] = form
