@@ -219,13 +219,19 @@ def registrationView(request):
             if form.is_valid():
                 form.save()
                 email = form.cleaned_data.get('email')
-                is_valid = validate_email(email)
-                if is_valid:
-                    user = authenticate(request, email=email, password=password)
-                    login(request,user)
-                    return redirect('conform_email')
-                messages.error(request,'Your email is not valid or does not Exist!')
-                return render(request,'register.html',context)
+                if bool(os.environ.get('ENAIL_VERIFICATION')):
+                    is_valid = validate_email(email)
+                    if is_valid:
+                        user = authenticate(request, email=email, password=password)
+                        login(request,user)
+                        return redirect('conform_email')
+                    messages.error(request,'Your email is not valid or does not Exist!')
+                    return render(request,'register.html',context)
+                login(request,user)
+                email_verified_obj = Email_Verified.objects.create(user=request.user)
+                email_verified_obj.email_verified = True
+                email_verified_obj.save()
+                return redirect('conform_email')
             else:
                 context['form'] = form
                 return render(request,'register.html',context)
