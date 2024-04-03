@@ -18,8 +18,8 @@ function getToken(name) {
       }
     }
     return cookieValue;
-  }
-  const csrftoken = getToken("csrftoken");
+}
+const csrftoken = getToken("csrftoken");
 
 function get_HTML_for_order_and_load_btn_with_column_title(obj_array){
     let html =  `

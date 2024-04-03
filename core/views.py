@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
 from . import forms as core_forms
 from django.core.paginator import Paginator
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib import messages
 from validate_email import validate_email
 from django.db.models import Q
@@ -1159,7 +1158,7 @@ def search_order(request):
                 context['orders'] = all_orders
                 return render(request, 'search_order.html', context)
         return redirect(request.META['HTTP_REFERER'])
-    raise Http404
+    raise Http404()
 
 @allowed_user(allowed_roles=['admin','staff'])
 def order(request, id):
@@ -1251,7 +1250,7 @@ def order(request, id):
                 order.save()
                 context = {'order_id':order.id,'mission':'success','operation':'promotion','old_condition':current_condition}
                 return JsonResponse(context)
-        raise Http404
+        raise Http404()
     order_obj = None
     context = {}
     order_items_array = []
