@@ -227,6 +227,7 @@ def registrationView(request):
                         return redirect('conform_email')
                     messages.error(request,'Your email is not valid or does not Exist!')
                     return render(request,'register.html',context)
+                user = authenticate(request, email=email, password=password)
                 login(request,user)
                 email_verified_obj = Email_Verified.objects.create(user=request.user)
                 email_verified_obj.email_verified = True
