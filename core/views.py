@@ -85,6 +85,10 @@ def get_recreated_products(products={},product=None):
 
 class Index(View):
     def get(self, request):
+        if int(os.environ.get('ENAIL_VERIFICATION')):
+            print('Debug: ENAIL_VERIFICATION ON')
+        else:
+            print('Debug: ENAIL_VERIFICATION OFF')
         recent_product = []
         categories_arr = [] 
         one_week = 60*60*24*7

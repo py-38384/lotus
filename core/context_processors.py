@@ -56,6 +56,5 @@ def landing_page_data(request):
     if LandingPageRelatedData.objects.filter(id=1).exists():
         lprd_obj = LandingPageRelatedData.objects.get(id=1)
         vendor_img_obj = list(VendorImage.objects.all())
-        print('Debug = {0}'.format(lprd_obj.hero_banner.url))
         return {'lprd_obj':lprd_obj,'vendor_img_obj':vendor_img_obj}
     return {'lprd_obj':{},'vendor_img_obj':[]}

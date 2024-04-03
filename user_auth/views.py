@@ -219,7 +219,7 @@ def registrationView(request):
             if form.is_valid():
                 form.save()
                 email = form.cleaned_data.get('email')
-                if bool(os.environ.get('ENAIL_VERIFICATION')):
+                if int(os.environ.get('ENAIL_VERIFICATION')):
                     is_valid = validate_email(email)
                     if is_valid:
                         user = authenticate(request, email=email, password=password)
