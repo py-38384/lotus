@@ -17,17 +17,27 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-cloudinary.config( 
-  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
-  api_key = os.environ.get('CLOUDINARY_API_KEY'), 
-  api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
-)
+from dotenv import load_dotenv
+load_dotenv()
+
+# cloudinary.config( 
+#   cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+#   api_key = os.environ.get('CLOUDINARY_API_KEY'), 
+#   api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
+# )
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
+# CLOUDINARY_URL=os.environ.get('CLOUDINARY_URL')
+MEDIA_URL = '/lotus/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-from dotenv import load_dotenv
-load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -57,6 +67,9 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'user_auth.apps.UserAuthConfig',
 
+    'cloudinary_storage',
+    'cloudinary',
+
     'django_apscheduler',
     
     'allauth',
@@ -82,7 +95,7 @@ MIDDLEWARE = [
     "user_auth.middleware.SimpleMiddleware"
 ]
 
-CSRF_TRUSTED_ORIGINS = ['lotus-7pwc.onrender.com','127.0.0.1','https://*.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com','https://127.0.0.1','https://*.railway.app']
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

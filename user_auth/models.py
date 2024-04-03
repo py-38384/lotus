@@ -5,7 +5,7 @@ from cloudinary.models import CloudinaryField
 class User(AbstractUser):
     bio = models.TextField(blank=True,null=True)
     mobile_number = models.CharField(max_length=30,blank=True,null=True)
-    display_picture = CloudinaryField('image')
+    display_picture = models.ImageField(upload_to='user/', blank=True, null=True)
 
 class Email_Verified(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True,)
