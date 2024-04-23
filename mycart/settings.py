@@ -49,9 +49,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG_FLAG =True
-if os.environ.get('ENV') == 'Production':
-    DEBUG_FLAG = False
+DEBUG_FLAG = True
+# if os.environ.get('ENV') == 'Production':
+#     DEBUG_FLAG = False
 DEBUG = DEBUG_FLAG
 
 ALLOWED_HOSTS = ['lotus-7pwc.onrender.com','127.0.0.1','lotus-production-9a8e.up.railway.app']
