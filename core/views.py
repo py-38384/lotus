@@ -1277,6 +1277,7 @@ def order(request, id):
             new_order_item['price'] = order_item.product.price
             new_order_item['total'] = order_item.product.price*order_item.quantity
         new_order_item['product'] = get_recreated_products(product=new_order_item['order_item'].product)
+        new_order_item['quantity'] = order_item.quantity
         order_items_array.append(new_order_item)
 
     shipping_details_obj = ShippingDetails.objects.get(order=order_obj)
